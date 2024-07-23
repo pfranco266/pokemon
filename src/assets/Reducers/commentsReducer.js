@@ -16,16 +16,18 @@ function commentReducer (state, action) {
             };
         case 'submitComment':
 
-
            return {
                 ...state,
                 commentsList: [...state.commentsList, action.payload]
             };
         case 'editComment':
-        return {
+            // find, filter the comments
+            const updatedCommentsList = state.commentsList.filter(comment => comment.id !== action.payload.id);
+            return {
                 ...state,
-                commentsList: [...state.commentsList, action.payload]
+                commentsList: [...updatedCommentsList, action.payload]
             };
+       
         case 'deleteComment':
         
 

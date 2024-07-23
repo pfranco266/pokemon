@@ -1,13 +1,16 @@
-import React, {useEffect, useState, useReducer} from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { CommentSectionContainer, CommentForm, CommentLabel, AuthorInput, CommentTextField, CommentSubmitButton } from "./CommentSection.styled";
 import { v4 as uuid } from 'uuid';
 import Comments from "./Comments"
 import { initialComments, commentReducer } from "../../Reducers/commentsReducer";
 
-function CommentSection ({id}) {
+function CommentSection({ id }) {
 
 
-
+    const [edit, setEdit] = useState({
+        isEdit: false,
+        editId: null
+    });
     const [textField, setTextField] = useState('')
     const [inputField, setInputField] = useState('')
 
@@ -24,12 +27,9 @@ function CommentSection ({id}) {
                 payload: data.data
             })
 
-            console.log(comments)
-
-
 
         } catch (error) {
-            console.error('Fetch error:', error); 
+            console.error('Fetch error:', error);
         }
     }
 
@@ -40,66 +40,96 @@ function CommentSection ({id}) {
         setTextField('')
     }, [id])
 
-  
+
 
     //handle the submission 
     async function handleSubmit(e) {
         e.preventDefault();
-        const commentData = {
-            id: uuid(),
-            content: e.target.elements.comment.value,
-            pokemonId: id, 
-            author: e.target.elements.author.value
-        }
-        try {
         
+        const commentContent = e.target.elements.comment.value.trim();
+        const authorContent = e.target.elements.author.value.trim();
+    
+        if (!commentContent || !authorContent) {
+            return alert('Both comment and author fields must be filled out.');
+        }
+    
+        const commentData = {
+            id: edit.isEdit ? edit.editId : uuid(),
+            content: commentContent,
+            pokemonId: id,
+            author: authorContent
+        };
+    
+        try {
             const res = await fetch(`http://localhost:3000/collection/${id}`, {
-                    method: 'POST', 
-                    headers: {
-                        'Content-Type': 'application/json',
-                      },
-                    body: JSON.stringify(commentData),
-                })
-     
-            if(!res.ok) {
-                throw new Error('error posting comment')
+                method: edit.isEdit ? 'PUT' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(commentData),
+            });
+    
+            if (!res.ok) {
+                throw new Error('Error posting comment');
             }
-            const data = await res.json()
-                   
+    
+            const data = await res.json();
+            console.log('Response data:', data);
+    
             setComments({
-                type: 'submitComment',
+                type: edit.isEdit ? 'editComment' : 'submitComment',
                 payload: data.comment,
             });
-
-            setTextField('')
-
+    
+            setTextField('');
+            setEdit(false);
         } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
+            setEdit(false);
         }
     }
+    
+    async function handleEdit(commentId, author, targetEdit) {
+        if (author !== inputField) {
+            return alert('Halt, you are not the author');
+        }
+        setInputField(author);
+        setTextField(targetEdit);
+        setEdit({
+            isEdit: true,
+            editId: commentId
+        });
+    }
+    
 
-   async function handleDelete(commentId) {
+    console.log(edit)
+    async function handleDelete(commentId) {
 
 
         try {
             const res = await fetch(`http://localhost:3000/collection/${id}`, {
-                    method: 'DELETE', 
-                    headers: {
-                        'Content-Type': 'application/json',
-                      },
-                    body: JSON.stringify({ commentId }),
-                })
-                console.log(res)
-     
-            if(!res.ok) {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ commentId }),
+            })
+            console.log(res)
+
+            if (!res.ok) {
                 const errorText = await res.text();
                 console.error('Failed to delete comment:', errorText);
                 throw new Error('Failed to delete comment');
             }
             const data = await res.json()
-            setComments({
-                type: 'deleteComment',
-                payload: commentId,
+            setComments(prevComments => {
+                if (edit.isEdit) {
+                    return prevComments.map(comment =>
+                        comment.id === edit.editId ? data.comment : comment
+                    );
+                } else {
+                    return [...prevComments, data.comment];
+                }
             });
 
         } catch (error) {
@@ -109,29 +139,29 @@ function CommentSection ({id}) {
 
     function handleUsernameChange(e) {
         setInputField(e.target.value);
-      }
-    
-      function handleCommentChange(e) {
+    }
+
+    function handleCommentChange(e) {
         setTextField(e.target.value);
-      }
+    }
 
     return (
         <CommentSectionContainer>
             <CommentForm onSubmit={handleSubmit} >
                 <CommentLabel htmlFor="Comments">Add a Comment:</CommentLabel>
                 <AuthorInput
-                placeholder="add your username"
-                value={inputField}
-                name="author"
-                onChange={handleUsernameChange}
+                    placeholder="add your username"
+                    value={inputField}
+                    name="author"
+                    onChange={handleUsernameChange}
                 />
-                <CommentTextField 
-                placeholder="Bulbasaur is way better than the other starter Pokemon..."
-                 name="comment" 
-                 value={textField} onChange={handleCommentChange} />
+                <CommentTextField
+                    placeholder="Bulbasaur is way better than the other starter Pokemon..."
+                    name="comment"
+                    value={textField} onChange={handleCommentChange} />
                 <CommentSubmitButton type="submit">Submit Comment</CommentSubmitButton>
             </CommentForm>
-            <Comments handleDelete={handleDelete} comments={comments?.commentsList}/>
+            <Comments handleEdit={handleEdit} handleDelete={handleDelete} comments={comments?.commentsList} />
         </CommentSectionContainer>
     )
 }

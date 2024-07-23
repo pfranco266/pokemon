@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import cors from 'cors';
 import sequelize from './Connection/connection.js';
 import Comments from "./Models/Comments.js"
@@ -44,13 +46,14 @@ try {
 
 
 app.post('/collection/:pokemonId', async (req, res) => {
-    console.log('running post')
 
     const { content, author, pokemonId} = req.body;
+    const id = uuidv4();  // Generate a unique ID
+
 try {
     console.log('bah', req.body)
 
-    const comment = await Comments.create({content, author, pokemonId})
+    const comment = await Comments.create({id, content, author, pokemonId})
     console.log('success', comment)
     res.status(200).send({
         message: 'success hogans',
@@ -64,6 +67,42 @@ try {
       });
 }
 });
+
+app.put('/collection/:pokemonId', async (req, res) => {
+    const { id, content, pokemonId, author } = req.body;
+
+    try {
+        // Update the comment
+        const [updated] = await Comments.update(
+            { content, author, pokemonId },
+            {
+                where: {
+                    id,
+                },
+            }
+        );
+
+        if (updated) {
+            // Fetch the updated comment
+            const updatedComment = await Comments.findOne({ where: { id } });
+            res.status(200).send({
+                message: 'success hogans',
+                comment: updatedComment
+            });
+        } else {
+            res.status(404).send({
+                message: 'Comment not found',
+            });
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(400).send({
+            message: 'sorry dude',
+        });
+    }
+});
+
 
 app.delete('/collection/:id', async (req, res) => {
     const data = req.body;
