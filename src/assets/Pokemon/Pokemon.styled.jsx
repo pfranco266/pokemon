@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import colorMap from './colorMap';
+import { SearchButton } from "../Collection/Search/Search.styled";
 
 
 
@@ -290,3 +291,6 @@ export const AddToCartNotification = styled.span`
 `
 
 
+export const AddtoCartButton = styled(SearchButton)`
+margin-left: 0;
+`

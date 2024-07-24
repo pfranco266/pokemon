@@ -102,9 +102,7 @@ function CommentSection({ id }) {
     }
     
 
-    console.log(edit)
     async function handleDelete(commentId) {
-
 
         try {
             const res = await fetch(`http://localhost:3000/collection/${id}`, {
@@ -114,23 +112,20 @@ function CommentSection({ id }) {
                 },
                 body: JSON.stringify({ commentId }),
             })
-            console.log(res)
 
             if (!res.ok) {
                 const errorText = await res.text();
                 console.error('Failed to delete comment:', errorText);
                 throw new Error('Failed to delete comment');
             }
-            const data = await res.json()
-            setComments(prevComments => {
-                if (edit.isEdit) {
-                    return prevComments.map(comment =>
-                        comment.id === edit.editId ? data.comment : comment
-                    );
-                } else {
-                    return [...prevComments, data.comment];
-                }
+            const data = await res.json();
+            console.log(data); 
+
+            setComments({
+                type: 'deleteComment',
+                payload: commentId,
             });
+            
 
         } catch (error) {
             console.log(error.message)

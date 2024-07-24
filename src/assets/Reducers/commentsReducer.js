@@ -19,7 +19,7 @@ function commentReducer (state, action) {
            return {
                 ...state,
                 commentsList: [...state.commentsList, action.payload]
-            };
+            } || null;
         case 'editComment':
             // find, filter the comments
             const updatedCommentsList = state.commentsList.filter(comment => comment.id !== action.payload.id);

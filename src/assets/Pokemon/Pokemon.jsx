@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
-import { PokemonGridContainer, PokemonGridItem, LoadMore, PokeContainer, AddToCart, GridItems, Price, AddToCartNotification } from "./Pokemon.styled";
+import { PokemonGridContainer, PokemonGridItem, PokeContainer, AddToCart, AddtoCartButton, GridItems, Price, AddToCartNotification } from "./Pokemon.styled";
 import PokemonCard from "./PokemonCard"
 import CartContext from "../../CartContext";
 import { fetchPokeList } from "../Reducers/pokeAPI"
@@ -129,9 +129,9 @@ function Pokemon() {
                                 $5.99
                                 {addedToCartMessage !== null ? <AddToCartNotification>{addedToCartMessage[index + 1]}</AddToCartNotification> : null}
                             </Price>
-                            <AddToCart aria-label="Add to cart" onClick={() => handleClick(index + 1)}>
+                            <AddtoCartButton aria-label="Add to cart" onClick={() => handleClick(index + 1)}>
                                 Add to Cart
-                            </AddToCart>
+                            </AddtoCartButton>
                         </GridItems>
                     ))
                 )}

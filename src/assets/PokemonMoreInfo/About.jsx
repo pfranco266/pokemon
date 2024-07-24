@@ -8,15 +8,13 @@ function About({ memoPokemon }) {
     const [pictureNumber, setPictureNumber] = useState(5)
 
 
-
-
     function handleNext() {
         if(pictureNumber < memoPokemon.sprites.length -1) {
             // console.log( memoPokemon.sprites)
             setPictureNumber(prev => prev + 1)
         }
         else {
-            setPictureNumber(prev => 0)
+            setPictureNumber(prev => prev = 0)
         }
     }
 

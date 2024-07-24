@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Title, Total, TotalContainer } from "./Cart.styled";
 import CartContext from "../../CartContext";
 import PokemonCard from "../Pokemon/PokemonCard";
-import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddToCart, ButtonContainer } from "../Pokemon/Pokemon.styled";
+import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddtoCartButton, ButtonContainer } from "../Pokemon/Pokemon.styled";
 import { Link } from "react-router-dom";
 import { LandingBodyContainer } from "../Home/Home.styled";
 
@@ -82,12 +82,12 @@ function Cart() {
                             </PokemonGridItem>
                             <Price>$5.99 x {item.amount}</Price>
                             <ButtonContainer>
-                                <AddToCart aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
+                                <AddtoCartButton aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
                                     Remove from cart
-                                </AddToCart>
-                                <AddToCart aria-label="Add more" onClick={() => addMore(item)}>
+                                </AddtoCartButton>
+                                <AddtoCartButton aria-label="Add more" onClick={() => addMore(item)}>
                                     Add More
-                                </AddToCart>
+                                </AddtoCartButton>
                             </ButtonContainer>
                         </GridItems>
                     ))

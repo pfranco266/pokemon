@@ -3,10 +3,31 @@ import { SingleCommentContainer, SingleCommentCard, SingleCommentAuthor, SingleC
 import CommentButton from "./CommentButtons"
 
 
+
+  
+  // Example usage
+
 function Comments({ handleEdit, comments, handleDelete }) {
 
 
+
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+        const options = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true,
+        };
+        return date.toLocaleDateString('en-US', options);
+      }
+
     console.log(comments)
+    const formattedDate = formatDate(comments.createdAt);
+
 
     return (
         <SingleCommentContainer>
@@ -15,13 +36,13 @@ function Comments({ handleEdit, comments, handleDelete }) {
                 {comments?.length > 0 && comments?.map((comment, index) => {
                     return (
                         <SingleCommentCard key={comment?.id}>
-                            <SingleCommentAuthor>{comment?.author}<SingleCommentTime> (says) </SingleCommentTime> * <SingleCommentTime>{comment.createdAt}</SingleCommentTime></SingleCommentAuthor>
+                            <SingleCommentTime>{formatDate(comment.createdAt)}</SingleCommentTime>
+                            <SingleCommentAuthor>{comment?.author}<SingleCommentTime> (says): </SingleCommentTime> </SingleCommentAuthor>
                             <li > {comment?.content}</li>
 
 
                             <EditOrDeleteContainer>
-                                <CommentButton handleAction={handleDelete} commentId={comment?.id} />
-                                <CommentButton targetEdit={comment?.content} handleAction={handleEdit} author={comment?.author} commentId={comment?.id} />
+                                <CommentButton handleDelete={handleDelete} commentId={comment?.id} />
                             </EditOrDeleteContainer>
 
 

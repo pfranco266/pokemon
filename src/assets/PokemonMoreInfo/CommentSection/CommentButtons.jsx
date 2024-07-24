@@ -2,14 +2,14 @@ import React, {useState} from "react";
 
 import {MessageAbove, ButtonSlideDownDiv, MiddleButtonWrapper,EditOrDeleteContainer, DeleteButton, CancelLower, ButtonWrapperDiv} from "./CommentSection.styled"
 
-function CommentButton ({commentId, handleAction, author=null, targetEdit=null}) {
+function CommentButton ({commentId, handleDelete, author=null, targetEdit=null}) {
     const [isConfirming, setIsConfirming] = useState(false);
 
 
     const handleDeleteClick = () => {
 
         if (isConfirming) {
-          handleAction(commentId, author, targetEdit);
+          handleDelete(commentId);
         } else {
           setIsConfirming(true);
         }
@@ -20,6 +20,7 @@ function CommentButton ({commentId, handleAction, author=null, targetEdit=null})
       };
 
 
+      
       return (
         <EditOrDeleteContainer>
      
