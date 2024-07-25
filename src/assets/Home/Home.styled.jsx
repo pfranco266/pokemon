@@ -6,6 +6,11 @@ text-align: center;
 font-size: 2em; 
 color: rgba(255, 255, 255, 0.87);
 text-transform: capitalize;
+@media(max-width: 600px) {
+    margin: '20px 0'
+}
+
+
 `
 
 export const HomeContainer = styled.div`
@@ -43,7 +48,10 @@ export const PokemonCatalog = styled.section`
 export const Text = styled.p`
     font-size: 2em;
     align-self: end;
+ @media(max-width: 1040px) {
+            font-size: 1.5em;
 
+    }
 
 `
 export const TextContainer = styled.div`

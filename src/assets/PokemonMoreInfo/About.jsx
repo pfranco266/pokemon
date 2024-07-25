@@ -54,10 +54,13 @@ function About({ memoPokemon }) {
                         {memoPokemon.description}
 
                         </li>
+                        <br></br>
                         <li>
                         {memoPokemon.description2}
 
                         </li>
+                        <br></br>
+
                         <li>
                         {memoPokemon.description3}
 

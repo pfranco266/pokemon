@@ -49,6 +49,11 @@ outline: none;
         text-decoration: underline;
 
     }
+        
+    @media(max-width: 600px) {
+    font-size: 1em;
+
+    }
     
 `
 export const CartContainer = styled.div`
@@ -61,6 +66,11 @@ export const CartContainer = styled.div`
 export const CartIcon = styled(MdOutlineShoppingCart)`
     height: 1.5em;
     width: 1.5em;
+    @media(max-width: 600px) {
+     height: 1.4em;
+    width: 1.4em;
+    margin-right: 8px;
+}
 `
 export const AmountContainer = styled.div`
     position: absolute;
@@ -74,11 +84,18 @@ export const AmountContainer = styled.div`
     height: 100%;
     width: 100%;
     background: #ffcc00; 
+        @media(max-width: 600px) {
+    height: 1.1em;
+    width: 1.1em;
+     top: 60%;
+    left: 60%;
+}
 
     
 `
 
 export const CartAmount = styled.span`
     color: #3b4cca;
+
 
 `

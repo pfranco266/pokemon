@@ -8,7 +8,7 @@ function PokemonCatalogFC () {
 
     return (
         <HomeContainer>
-            <Title>Catalog of Pokemon Cards</Title>
+            <Title >Catalog of Pokemon Cards</Title>
             <PokemonCatalog>
                 <Pokemon />
             </PokemonCatalog>
