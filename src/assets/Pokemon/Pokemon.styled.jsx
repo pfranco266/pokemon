@@ -142,6 +142,7 @@ export const PreviousEvolutionContainer = styled.div`
   colorMap[backgroundType?.[1]?.type?.name] ? colorMap[backgroundType?.[0]?.type?.name].color : colorMap.normal.color};
 `
 export const PreviousEvolutionEvolve = styled.span`
+
   font-size: 8px;
   position: absolute;
   left: 0%;
@@ -155,16 +156,14 @@ export const MovesContainer = styled.div`
   flex-direction: column;
   
 `
-
 export const PreviousEvolutionName = styled.span`
-  font-size: 7px;
+  font-size: 9px;
   position: absolute;
-  left: 1%;
+  left: 50%;
   bottom: 3%;
-  text-wrap: nowrap;
-
-`
-
+  white-space: nowrap;
+  transform: translateX(-50%);
+`;
 export const PokemonDescriptionContainer = styled.div`
   display: flex;
   width: 80%;
