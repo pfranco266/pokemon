@@ -62,6 +62,9 @@ function Cart() {
         });
     };
 
+
+
+
     return (
         <LandingBodyContainer>
             <Title>
@@ -81,8 +84,8 @@ function Cart() {
                                 <PokemonCard index={item.index} />
                             </PokemonGridItem>
                             <Price>$5.99 x {item.amount}</Price>
-                            <ButtonContainer>
-                                <AddtoCartButton aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
+                            <ButtonContainer style={{justifyContent: 'space-between'}}>
+                                <AddtoCartButton style={{background: '#ff0000', color: '#ffcc00'}} aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
                                     Remove from cart
                                 </AddtoCartButton>
                                 <AddtoCartButton aria-label="Add more" onClick={() => addMore(item)}>

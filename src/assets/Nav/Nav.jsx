@@ -1,11 +1,13 @@
-import React from "react";
-import { Link, CartIcon, NavContainer, NavBar} from "./Nav.styled";
-
+import React, {useContext} from "react";
+import { Link, NavContainer, NavBar, } from "./Nav.styled";
+import CartContext from "../../CartContext";
+import Cart from "./Cart"
 
 
 
 function Nav() {
 
+    const { totalAmount } = useContext(CartContext);
 
     return (
         <NavContainer>
@@ -17,7 +19,7 @@ function Nav() {
                 <Link aria-label="Pokemon Cards" to="/pokemoncards">Pokemon Cards</Link>
 
                 <Link aria-label="Cart" to="/cart">
-                    <CartIcon />
+                    <Cart amount={totalAmount}/>
 
                 </Link>
             </NavBar>

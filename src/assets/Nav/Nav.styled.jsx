@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Link as RouterLink } from 'react-router-dom';
 import { MdOutlineShoppingCart } from "react-icons/md";
+import { PiFlyingSaucerDuotone } from "react-icons/pi";
 
 
 
@@ -31,6 +32,7 @@ justify-content: space-evenly;
 `
 export const Link = styled(RouterLink)`
     color: white;
+    position: relative;
     font-weight: bold;
     text-decoration: none;
     padding: 10px;
@@ -49,8 +51,35 @@ outline: none;
     }
     
 `
+export const CartContainer = styled.div`
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
 export const CartIcon = styled(MdOutlineShoppingCart)`
     height: 1.5em;
     width: 1.5em;
+`
+export const AmountContainer = styled.div`
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 70%;
+    left: 70%;
+    border-radius: 50%;
+    border: 2px solid #3b4cca;
+    height: 100%;
+    width: 100%;
+    background: #ffcc00; 
+
+    
+`
+
+export const CartAmount = styled.span`
+    color: #3b4cca;
+
 `
 

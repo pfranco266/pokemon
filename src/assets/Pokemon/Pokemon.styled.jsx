@@ -293,4 +293,16 @@ export const AddToCartNotification = styled.span`
 
 export const AddtoCartButton = styled(SearchButton)`
 margin-left: 0;
+  transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+  
+&:hover{
+box-shadow: 0px 5px 5px  #ffcc00;
+
+}
+&:active{
+box-shadow: none;
+    transform: scale(0.95);
+
+
+}
 `
