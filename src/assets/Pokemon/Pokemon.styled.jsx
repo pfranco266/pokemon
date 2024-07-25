@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import colorMap from './colorMap';
+import { SearchButton } from "../Collection/Search/Search.styled";
 
 
 
@@ -141,6 +142,7 @@ export const PreviousEvolutionContainer = styled.div`
   colorMap[backgroundType?.[1]?.type?.name] ? colorMap[backgroundType?.[0]?.type?.name].color : colorMap.normal.color};
 `
 export const PreviousEvolutionEvolve = styled.span`
+
   font-size: 8px;
   position: absolute;
   left: 0%;
@@ -154,16 +156,14 @@ export const MovesContainer = styled.div`
   flex-direction: column;
   
 `
-
 export const PreviousEvolutionName = styled.span`
-  font-size: 7px;
+  font-size: 9px;
   position: absolute;
-  left: 1%;
+  left: 50%;
   bottom: 3%;
-  text-wrap: nowrap;
-
-`
-
+  white-space: nowrap;
+  transform: translateX(-50%);
+`;
 export const PokemonDescriptionContainer = styled.div`
   display: flex;
   width: 80%;
@@ -290,3 +290,18 @@ export const AddToCartNotification = styled.span`
 `
 
 
+export const AddtoCartButton = styled(SearchButton)`
+margin-left: 0;
+  transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+  
+&:hover{
+box-shadow: 0px 5px 5px  #ffcc00;
+
+}
+&:active{
+box-shadow: none;
+    transform: scale(0.95);
+
+
+}
+`

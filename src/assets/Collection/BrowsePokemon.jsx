@@ -5,9 +5,9 @@ import { fetchPokeList } from "../Reducers/pokeAPI";
 import { pokeListReducer, initialPokeList } from "../Reducers/pokemonListReducer";
 import SinglePokeCard from "./SinglePokeCard";
 
-function BrowsePokemon({ selectedOption }) {
+function BrowsePokemon({ selectedOption, autoCompleteList, setAutoCompleteList }) {
     const [pokemonList, pokeListDispatch] = useReducer(pokeListReducer, initialPokeList);
-
+    
     const fetchData = async (url) => {
         pokeListDispatch({ type: 'setLoading' });
         try {
@@ -16,6 +16,15 @@ function BrowsePokemon({ selectedOption }) {
                 type: 'setPokeList',
                 payload: data
             });
+
+            data.results.map(results => {
+                setAutoCompleteList(prev=> {
+                    return [
+                        ...prev,
+                        results.name
+                    ]
+                })
+           })
         } catch (error) {
             pokeListDispatch({
                 type: 'setError',
@@ -28,25 +37,39 @@ function BrowsePokemon({ selectedOption }) {
         fetchData(pokemonList?.initialUrl);
     }, []);
 
+    
+
     useEffect(() => {
         const handleLoadAll = async () => {
 
             try {
              
-                if (pokemonList?.list?.length >= 251) {
+                if (pokemonList?.list?.length > 251) {
                     return;
                 }
-
                 if (pokemonList?.nextUrl) {
                     const { data } = await fetchPokeList(pokemonList.nextUrl);
+                    //map over results to set auto complete list with the pokemon names
+
+                   data.results.map(results => {
+                        setAutoCompleteList(prev=> {
+                            return [
+                                ...prev,
+                                results.name
+                            ]
+                        })
+                   })
+                   // set pokemon list with reducer
                     pokeListDispatch({
                         type: 'setPokeList',
                         payload: data
                     });
+                    
                     pokeListDispatch({ 
                         type: 'setLoading', 
                         payload: false 
                     });
+
 
                 }
             } catch (error) {
@@ -59,8 +82,6 @@ function BrowsePokemon({ selectedOption }) {
 
         handleLoadAll();
     }, [pokemonList?.nextUrl]);
-
-console.log(pokemonList?.list.length)
 
     return (
         <OuterBrowseContainer>

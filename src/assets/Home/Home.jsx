@@ -11,7 +11,8 @@ function Home () {
         <Title><Pokemonlogo src={pokemon} alt="Pokemon Logo" /></Title>
 
         <TextContainer>
-        <Text>Thanks for visiting my pokemon card collection. I am not affiliated with The Pokemon Company, and information/collection is not my properties. Enjoy! </Text>
+        <Text>Thanks for visiting my pokemon card collection. I am not affiliated with The Pokemon Company, 
+            items are not actually for sale, and any Pokemon information/collection are not my properties. Enjoy! </Text>
         <Pikachu src={pikachu} alt="Pokemon Logo" />
 
         </TextContainer>
@@ -22,4 +23,3 @@ function Home () {
 }
 
 export default Home;
-

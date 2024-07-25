@@ -9,11 +9,13 @@ import { Link } from "react-router-dom";
 
 function Footer () {
 
+    const date = new Date();
+    const year = date.getFullYear();
 
     return(
         <FooterContainer>
             <FooterTextContainer>
-            <FooterText>All rights reserved. Made an implemented by Phil Franco, using React + Vite & Styled-Components. &#169;2024</FooterText>
+            <FooterText>All rights reserved &#169;{year}. Created and implemented by Phil Franco, using React + Vite & Styled-Components.</FooterText>
             </FooterTextContainer>
             <FooterIconContainer>
 

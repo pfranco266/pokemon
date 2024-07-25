@@ -29,8 +29,11 @@ export const PokeballSVG = styled.img`
 
 export const OuterBrowseContainer = styled(HomeContainer)`
   flex-direction: column;
-  margin: 5em 0;
+  margin: 2em 0;
+  @media(min-width: 700px) {
+    margin: 1em 0;
 
+  }
 `
 
 export const BrowseContainer = styled.div`
@@ -241,15 +244,19 @@ export const StyledLabel = styled.label`
 
 export const StyledSelect = styled.select`
 padding: 10px;
-border: 2px solid #ccc;
+border: 4px solid #3b4cca;
 border-radius: 5px;
 font-size: 16px;
 outline: none;
 margin-top: .5em;
 transition: border-color 0.3s ease;
 
+
 &:focus {
   border-color: #007bff;
+}
+&: hover{
+  cursor: pointer;
 }
 @media(max-width: 1350px) {
 
@@ -269,7 +276,7 @@ transition: border-color 0.3s ease;
 export const DropdownButtonContainer = styled.div`
   display: flex; 
   justify-content: space-around;
-  
+
 
 @media(max-width: 768px) {
   flex-direction: column;

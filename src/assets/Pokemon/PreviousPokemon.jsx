@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo} from "react";
 import { PreviousEvoSprite, PreviousEvolutionContainer, PreviousEvolutionName, PreviousEvolutionEvolve } from "./Pokemon.styled";
 
-function PreviousPokemon({cardPokemon, backgroundType}) {
+function PreviousPokemon({cardPokemon, backgroundType, capitalizeFirstLetter}) {
     
         const [species, setSpecies] = useState({
             id: null,
@@ -53,11 +53,10 @@ function PreviousPokemon({cardPokemon, backgroundType}) {
             </PreviousEvolutionEvolve>
             <PreviousEvoSprite src={memoizedPreviousDetails.sprites.default}/>
             <PreviousEvolutionName>
-                {memoizedPreviousDetails.name}
+                {capitalizeFirstLetter(memoizedPreviousDetails?.name)}
             </PreviousEvolutionName>
         </PreviousEvolutionContainer>
     )
 }
 
 export default PreviousPokemon
-

@@ -8,7 +8,7 @@ import { MdOutlineSpeed } from "react-icons/md";
 import { GiHealthIncrease } from "react-icons/gi";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import styled, { keyframes } from 'styled-components';
-
+import {Title} from "../Home/Home.styled"
 
 
 export const OpenPokeballImage = styled.img`
@@ -115,6 +115,14 @@ export const PokeNumber = styled.span`
     padding-left: 10px;
   }
 `;
+
+export const MoreInfoSubtitle = styled.h1`
+text-align: center;
+font-size: 2em; 
+color: rgba(255, 255, 255, 0.87);
+text-transform: capitalize;
+  margin: 2em 0;
+`
 
 export const LandingSVG = styled.img`
   transform: scaleX(-1);
@@ -487,7 +495,7 @@ export const MythicalBanner = styled.h1`
   background: linear-gradient(
     to right,
     ${({ type }) => colorMap[type]?.color} 0%,
-    black 10%,
+    #242424 10%,
     ${({ type }) => colorMap[type]?.color} 20%
   );
   background-size: 400px 100%;
@@ -571,7 +579,6 @@ white-space: nowrap;
     
 //     );
 // `
-
 
 
 

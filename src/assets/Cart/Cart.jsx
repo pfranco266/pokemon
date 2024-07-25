@@ -1,14 +1,14 @@
 import React, { useContext } from "react";
-import { Title, Total, TotalContainer } from "./Cart.styled";
+import { Title, Total, TotalContainer, SubTotal, FinalTotal, Container, SummaryTitle } from "./Cart.styled";
 import CartContext from "../../CartContext";
 import PokemonCard from "../Pokemon/PokemonCard";
-import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddToCart, ButtonContainer } from "../Pokemon/Pokemon.styled";
+import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddtoCartButton, ButtonContainer } from "../Pokemon/Pokemon.styled";
 import { Link } from "react-router-dom";
 import { LandingBodyContainer } from "../Home/Home.styled";
 
 function Cart() {
     const { cart, setCart } = useContext(CartContext);
-    const itemPrice = 5.99; 
+    const itemPrice = 5.99;
 
     const totalBeforeTax = cart.reduce((total, item) => {
         return total + (itemPrice * item.amount);
@@ -16,15 +16,15 @@ function Cart() {
 
     function calcTax(totalBeforeTax) {
         const taxRate = 0.09;
-        const numericTotalBeforeTax = Number(totalBeforeTax); 
-        return (numericTotalBeforeTax * taxRate).toFixed(2); 
+        const numericTotalBeforeTax = Number(totalBeforeTax);
+        return (numericTotalBeforeTax * taxRate).toFixed(2);
     }
 
     const tax = calcTax(totalBeforeTax);
 
     function calcTotal(tax, totalBeforeTax) {
-        const numericTax = Number(tax); 
-        const numericTotalBeforeTax = Number(totalBeforeTax); 
+        const numericTax = Number(tax);
+        const numericTotalBeforeTax = Number(totalBeforeTax);
         return (numericTax + numericTotalBeforeTax).toFixed(2);
     }
 
@@ -70,7 +70,7 @@ function Cart() {
             <Title>
                 {cart.length > 0 ? `You have ${cart.length} Pokemon in your cart` : `Your cart is empty.`}
             </Title>
-             <Title>
+            <Title>
                 {cart.length === 0 ? <Link to={'/pokemoncards'}>See our Pokemon Card Selection</Link> : null}
             </Title>
             <PokemonGridContainer>
@@ -81,13 +81,13 @@ function Cart() {
                                 <PokemonCard index={item.index} />
                             </PokemonGridItem>
                             <Price>$5.99 x {item.amount}</Price>
-                            <ButtonContainer>
-                                <AddToCart aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
+                            <ButtonContainer style={{ justifyContent: 'space-between' }}>
+                                <AddtoCartButton style={{ background: '#ff0000', color: '#ffcc00' }} aria-label="Remove from cart" onClick={() => removeFromCart(item)}>
                                     Remove from cart
-                                </AddToCart>
-                                <AddToCart aria-label="Add more" onClick={() => addMore(item)}>
+                                </AddtoCartButton>
+                                <AddtoCartButton aria-label="Add more" onClick={() => addMore(item)}>
                                     Add More
-                                </AddToCart>
+                                </AddtoCartButton>
                             </ButtonContainer>
                         </GridItems>
                     ))
@@ -95,11 +95,14 @@ function Cart() {
             </PokemonGridContainer>
 
             {cart.length > 0 && (
-                <TotalContainer>
-                    <Total>Your sum total is: ${totalBeforeTax}</Total>
-                    <Total>Tax 9%: ${tax}</Total>
-                    <Total>Your final total is: ${total}</Total>
-                </TotalContainer>
+                <Container>
+                    <TotalContainer>
+                        <SummaryTitle>Order Summary</SummaryTitle>
+                        <SubTotal>Total before tax: ${totalBeforeTax}</SubTotal>
+                        <SubTotal>Tax (9%): ${tax}</SubTotal>
+                        <FinalTotal>Total: ${total}</FinalTotal>
+                    </TotalContainer>
+                </Container>
             )}
         </LandingBodyContainer>
     );
