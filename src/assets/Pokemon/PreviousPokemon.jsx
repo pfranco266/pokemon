@@ -53,7 +53,7 @@ function PreviousPokemon({cardPokemon, backgroundType, capitalizeFirstLetter}) {
             </PreviousEvolutionEvolve>
             <PreviousEvoSprite src={memoizedPreviousDetails.sprites.default}/>
             <PreviousEvolutionName>
-                {memoizedPreviousDetails?.name}
+                {capitalizeFirstLetter(memoizedPreviousDetails?.name)}
             </PreviousEvolutionName>
         </PreviousEvolutionContainer>
     )

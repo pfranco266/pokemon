@@ -51,9 +51,11 @@ function PokemonCard({ index }) {
   }, [memoizedPokemonDetails.moves.length, memoizedPokemonDetails.description.length]);
 
   const capitalizeFirstLetter = (string) => {
+    if (typeof string !== 'string') {
+      return '';
+    }
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-
 
   return (
     <IndividualPokeContainer color1={memoizedPokemonDetails.types?.[0]?.type?.name || '#f1f1f1'} color2={memoizedPokemonDetails.types?.[1]?.type?.name}>
@@ -79,7 +81,7 @@ function PokemonCard({ index }) {
       </PokemonDescriptionContainer>
       <PokemonMoveContainer>
         <Name>
-          Special Move: {memoizedPokemonDetails?.moves[randomMove]?.move?.name}
+          Special Move: {capitalizeFirstLetter(memoizedPokemonDetails?.moves[randomMove]?.move?.name)}
         </Name>
         <Name>
           {memoizedPokemonDetails?.stats.specialAttack}
