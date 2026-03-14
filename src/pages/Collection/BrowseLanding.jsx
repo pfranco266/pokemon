@@ -44,8 +44,6 @@ function BrowseLanding() {
     navigate(`/collection/${searchTerm}`);
 
   }
-  console.log('setSearchTerm in BrowseLanding:', setSearchTerm);
-
 
 
   return (

@@ -1,110 +1,54 @@
-import React, {useEffect, useReducer, useMemo, isValidElement} from "react";
-import { fetchSinglePokemon, fetchEvolutionData } from "../../api/pokeAPI";
+import React, { useEffect, useReducer } from "react";
 import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
-import {PokemonSVG, SinglePokemonContainer, PokemonName, PokemonIndex} from "./Browse.styled"
-import PokemonTypes from "./PokemonTypes"
+import { PokemonSVG, SinglePokemonContainer, PokemonName, PokemonIndex } from "./Browse.styled";
+import PokemonTypes from "./PokemonTypes";
 import Pokeball from "../../components/Pokeball/Pokeball";
-import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
+import { usePokemonCache } from "../../context/PokemonCacheContext";
 
-
-
-function SinglePokeCard({ index, selectedOption=""}) {
-
-const [pokemonDetails, setPokemonDetails] = useReducer(pokemonReducer, initialPokeDetails);
-
-
-
-    async function fetchData (index) {
-            setPokemonDetails({
-                type: 'setLoading', 
-            })
-            try {
-                const {pokemonSpeciesData, pokemonDetailData} = await fetchSinglePokemon(index);
-
-                if (pokemonSpeciesData?.evolution_chain?.url) {
-                    
-                  const evolvesFromUrl = pokemonSpeciesData.evolves_from_species?.url || '';
-
-                  const evolutionData = await fetchEvolutionData(pokemonSpeciesData.evolution_chain.url, evolvesFromUrl);
-                //   console.log(index, pokemonDetailData.name, evolutionData)
-
-
-      
-                  setPokemonDetails({
-                      type: 'setPokemonDetails',
-                      payload: { pokemonDetailData, pokemonSpeciesData, evolutionData }
-                  })
-              } 
-      
-            } catch (error) {
-                setPokemonDetails({
-                    type: 'setError',
-                    payload: error.message
-                })
-            }
-    }
-
+function SinglePokeCard({ index, selectedOption = "" }) {
+    const [pokemonDetails, dispatch] = useReducer(pokemonReducer, initialPokeDetails);
+    const { fetchPokemonDetail } = usePokemonCache();
 
     useEffect(() => {
-        fetchData(index);
-    if(selectedOption == memoPokemon?.types[0?.type?.name]) {
-            console.log('TRUTE DAT', selectedOption, memoPokemon?.types[0]?.type?.name)
+        const fetchData = async () => {
+            dispatch({ type: 'setLoading' });
+            try {
+                const result = await fetchPokemonDetail(index);
+                if (!result) return; // index beyond valid species range
+                const { pokemonSpeciesData, pokemonDetailData, evolutionData } = result;
+                dispatch({
+                    type: 'setPokemonDetails',
+                    payload: { pokemonDetailData, pokemonSpeciesData, evolutionData }
+                });
+            } catch (error) {
+                dispatch({ type: 'setError', payload: error.message });
+            }
+        };
+        fetchData();
+    }, [index, selectedOption]);
 
-    }
-    }, [selectedOption])
+    if (!pokemonDetails.name) return null;
 
- 
-    const memoPokemon = useMemo(() => pokemonDetails, [pokemonDetails]);
+    const card = (
+        <SinglePokemonContainer to={`/collection/${pokemonDetails?.id}`} type={pokemonDetails?.types[0]?.type?.name}>
+            <PokemonIndex>#{pokemonDetails?.id}</PokemonIndex>
+            <PokemonName>{pokemonDetails.name}</PokemonName>
+            <PokemonTypes types={pokemonDetails?.types} />
+            <Pokeball />
+            <PokemonSVG
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${index}.svg`}
+                alt={pokemonDetails.name}
+                onError={(e) => {
+                    e.currentTarget.onError = null;
+                    e.currentTarget.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index}.png`;
+                }}
+            />
+        </SinglePokemonContainer>
+    );
 
- 
-
-    if(selectedOption === memoPokemon?.types[0]?.type?.name) {
-        return (    
-
-            <SinglePokemonContainer to={`/collection/${memoPokemon?.id}`} type={memoPokemon?.types[0]?.type?.name}>
-            <PokemonIndex> #{memoPokemon?.id}</PokemonIndex> <PokemonName> {memoPokemon.name}</PokemonName>
-    
-            
-            
-                 <PokemonTypes  types={memoPokemon?.types}/>
-                 <Pokeball/>
-          
-    
-             <PokemonSVG src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${index}.svg`} alt={memoPokemon.name} />
-    
-         </SinglePokemonContainer>
-            
-      
-          
-        )
-    } if(selectedOption === '') {
-        
-    return (
-        <SinglePokemonContainer to={`/collection/${memoPokemon?.id}`} type={memoPokemon?.types[0]?.type?.name}>
-        <PokemonIndex> #{memoPokemon?.id}</PokemonIndex> <PokemonName> {memoPokemon.name}</PokemonName>
-
-        
-        
-             <PokemonTypes  types={memoPokemon?.types}/>
-             <Pokeball/>
-      
-
-         <PokemonSVG src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${index}.svg`} alt={memoPokemon.name} />
-
-     </SinglePokemonContainer>
-    )
-        
-    } else {
-        return null
-    }
-
-   
+    if (selectedOption === pokemonDetails?.types[0]?.type?.name) return card;
+    if (selectedOption === '') return card;
+    return null;
 }
 
 export default SinglePokeCard;
-
-
-
-
-
-

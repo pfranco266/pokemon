@@ -1,143 +1,33 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { BrowseContainer, OuterBrowseContainer, DropdownButtonContainer } from "./Browse.styled";
-import { LoadMore } from "../../components/PokemonCard/Pokemon.styled";
-import { fetchPokeList } from "../../api/pokeAPI";
-import { pokeListReducer, initialPokeList } from "../../reducers/pokemonListReducer";
+import React, { useEffect } from "react";
+import { BrowseContainer, OuterBrowseContainer } from "./Browse.styled";
+import { usePokemonCache } from "../../context/PokemonCacheContext";
 import SinglePokeCard from "./SinglePokeCard";
 
-function BrowsePokemon({ selectedOption, autoCompleteList, setAutoCompleteList }) {
-    const [pokemonList, pokeListDispatch] = useReducer(pokeListReducer, initialPokeList);
-    
-    const fetchData = async (url) => {
-        pokeListDispatch({ type: 'setLoading' });
-        try {
-            const { data } = await fetchPokeList(url);
-            pokeListDispatch({
-                type: 'setPokeList',
-                payload: data
-            });
+function BrowsePokemon({ selectedOption, setAutoCompleteList }) {
+    const { listState, fetchAllListPages } = usePokemonCache();
 
-            data.results.map(results => {
-                setAutoCompleteList(prev=> {
-                    return [
-                        ...prev,
-                        results.name
-                    ]
-                })
-           })
-        } catch (error) {
-            pokeListDispatch({
-                type: 'setError',
-                payload: error.message
-            });
-        }
-    }
-
+    // Kick off full list load on mount. No-op if already loaded or in progress.
     useEffect(() => {
-        fetchData(pokemonList?.initialUrl);
+        fetchAllListPages();
     }, []);
 
-    
-
+    // Keep autocomplete list in sync with the cache as pages arrive.
     useEffect(() => {
-        const handleLoadAll = async () => {
-
-            try {
-             
-                if (pokemonList?.list?.length > 251) {
-                    return;
-                }
-                if (pokemonList?.nextUrl) {
-                    const { data } = await fetchPokeList(pokemonList.nextUrl);
-                    //map over results to set auto complete list with the pokemon names
-
-                   data.results.map(results => {
-                        setAutoCompleteList(prev=> {
-                            return [
-                                ...prev,
-                                results.name
-                            ]
-                        })
-                   })
-                   // set pokemon list with reducer
-                    pokeListDispatch({
-                        type: 'setPokeList',
-                        payload: data
-                    });
-                    
-                    pokeListDispatch({ 
-                        type: 'setLoading', 
-                        payload: false 
-                    });
-
-
-                }
-            } catch (error) {
-                pokeListDispatch({
-                    type: 'setError',
-                    payload: error.message
-                });
-            }
+        if (listState.list.length > 0) {
+            setAutoCompleteList(listState.list.map(p => p.name));
         }
-
-        handleLoadAll();
-    }, [pokemonList?.nextUrl]);
+    }, [listState.list.length]);
 
     return (
         <OuterBrowseContainer>
-            {pokemonList.list > 150? <h2>Loading...Please wait</h2> : null}
-
+            {listState.loading && listState.list.length === 0 && <h2>Loading...Please wait</h2>}
             <BrowseContainer>
-                {pokemonList && pokemonList?.list?.map((poke, index) => (
+                {listState.list.map((poke, index) => (
                     <SinglePokeCard selectedOption={selectedOption} key={index} index={index + 1} />
                 ))}
             </BrowseContainer>
-
-   
-
-            {pokemonList?.list.length >= 251 && <h1>I only like the first 250ish Pokémon</h1>}
         </OuterBrowseContainer>
     );
 }
 
 export default BrowsePokemon;
-
-
-
-const movies = [
-    { title: "The Matrix", genre: "Sci-Fi", rating: 9 },
-    { title: "Inception", genre: "Sci-Fi", rating: 8 },
-    { title: "Interstellar", genre: "Sci-Fi", rating: 10 },
-    { title: "The Dark Knight", genre: "Action", rating: 9 },
-    { title: "Gladiator", genre: "Action", rating: 8 },
-    { title: "The Shawshank Redemption", genre: "Drama", rating: 10 },
-    { title: "Forrest Gump", genre: "Drama", rating: 9 }
-  ];
-
-  function groupBy (arr) {
-    if(arr.length < 1) return [];
-
-    const copyArr = [...arr];
-    const movieObj = {}
-
-    copyArr.forEach(movie => {
-        if(!movieObj[movie.genre]) {
-            movieObj[movie.genre] = [];
-        }
-        movieObj[movie.genre] = [movie.title, movie.rating];
-    });
-
-    for(let [key, value] of Object.entries(movieObj)) {
-
-    }
-
-  }
-
-
-  const oo = {
-    genre: [
-        {title: 'movie', 
-            space: 'left'
-        }
-    ]
-  }

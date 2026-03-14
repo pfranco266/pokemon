@@ -63,31 +63,31 @@ function pokemonReducer(state, action) {
 sprites : [
   {
     description: 'Front Default',
-    picture: pokemonDetailData.sprites?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.front_default || null
   },
   {
     description: 'Back Default',
-    picture: pokemonDetailData.sprites?.back_default || defaultImage
+    picture: pokemonDetailData.sprites?.back_default || null
   },
   {
     description: 'Front Shiny Default',
-    picture: pokemonDetailData.sprites?.front_shiny || defaultImage
+    picture: pokemonDetailData.sprites?.front_shiny || null
   },
   {
     description: 'Back Shiny Default',
-    picture: pokemonDetailData.sprites?.back_shiny || defaultImage
+    picture: pokemonDetailData.sprites?.back_shiny || null
   },
   {
     description: 'Showdown',
-    picture: pokemonDetailData.sprites?.other?.showdown?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.other?.showdown?.front_default || null
   },
   {
     description: 'Scroll Sprites Through Generations',
-    picture: pokemonDetailData.sprites?.other?.home?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.other?.home?.front_default || null
   },
   {
     description: 'Generation 1',
-    picture: pokemonDetailData.sprites?.versions?.["generation-i"]?.["red-blue"]?.front_default || pokemonDetailData.sprites?.other?.home?.front_default || defaultImage,
+    picture: pokemonDetailData.sprites?.versions?.["generation-i"]?.["red-blue"]?.front_default || pokemonDetailData.sprites?.other?.home?.front_default || null,
   },
   {
     description: 'Generation 2',
@@ -99,23 +99,23 @@ sprites : [
   },
   {
     description: 'Generation 4',
-    picture: pokemonDetailData.sprites?.versions?.["generation-iv"]?.["diamond-pearl"]?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.versions?.["generation-iv"]?.["diamond-pearl"]?.front_default || null
   },
   {
     description: 'Generation 5',
-    picture: pokemonDetailData.sprites?.versions?.["generation-v"]?.["black-white"]?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.versions?.["generation-v"]?.["black-white"]?.front_default || null
   },
   {
     description: 'Generation 6',
-    picture: pokemonDetailData.sprites?.versions?.["generation-vi"]?.["omegaruby-alphasapphire"]?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.versions?.["generation-vi"]?.["omegaruby-alphasapphire"]?.front_default || null
   },
   {
     description: 'Generation 7',
-    picture: pokemonDetailData.sprites?.versions?.["generation-vii"]?.["ultra-sun-ultra-moon"]?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.versions?.["generation-vii"]?.["ultra-sun-ultra-moon"]?.front_default || null
   },
   {
     description: 'Generation 8',
-    picture: pokemonDetailData.sprites?.versions?.["generation-viii"]?.icons?.front_default || defaultImage
+    picture: pokemonDetailData.sprites?.versions?.["generation-viii"]?.icons?.front_default || null
   }
 ],
           stats: {
@@ -131,9 +131,9 @@ sprites : [
           types: pokemonDetailData.types,
           moves: pokemonDetailData.moves,
           evolutionTree: evolutionData,
-          description: pokemonSpeciesData.flavor_text_entries[0].flavor_text,
-          description2: pokemonSpeciesData.flavor_text_entries[2].flavor_text,
-          description3: pokemonSpeciesData.flavor_text_entries[3].flavor_text,
+          description: pokemonSpeciesData.flavor_text_entries?.[0]?.flavor_text ?? '',
+          description2: pokemonSpeciesData.flavor_text_entries?.[2]?.flavor_text ?? '',
+          description3: pokemonSpeciesData.flavor_text_entries?.[3]?.flavor_text ?? '',
 
 
           error: '',

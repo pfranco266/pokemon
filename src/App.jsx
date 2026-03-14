@@ -4,6 +4,7 @@ import { Container } from './App.styled'
 import { Routes, Route} from 'react-router-dom';
 import React from 'react';
 import { CartProvider } from './context/CartContext';
+import { PokemonCacheProvider } from './context/PokemonCacheContext';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -16,8 +17,8 @@ import Footer from "./components/Footer"
 function App() {
   return (
         <Container >
-            <CartProvider>  
-           
+            <CartProvider>
+            <PokemonCacheProvider>
 
               <Nav/>
               <Routes>
@@ -28,6 +29,7 @@ function App() {
                   <Route path="/cart" element={<Cart />}/>
               </Routes>
 
+            </PokemonCacheProvider>
             </CartProvider>
               <Footer/>
         </Container>
