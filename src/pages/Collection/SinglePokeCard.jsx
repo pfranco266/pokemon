@@ -4,6 +4,7 @@ import { PokemonSVG, SinglePokemonContainer, PokemonName, PokemonIndex } from ".
 import PokemonTypes from "./PokemonTypes";
 import Pokeball from "../../components/Pokeball/Pokeball";
 import { usePokemonCache } from "../../context/PokemonCacheContext";
+import { capitalizeFirstLetter } from "../../utils/stringUtils";
 
 function SinglePokeCard({ index, selectedOption = "" }) {
     const [pokemonDetails, dispatch] = useReducer(pokemonReducer, initialPokeDetails);
@@ -32,7 +33,7 @@ function SinglePokeCard({ index, selectedOption = "" }) {
     const card = (
         <SinglePokemonContainer to={`/collection/${pokemonDetails?.id}`} type={pokemonDetails?.types[0]?.type?.name}>
             <PokemonIndex>#{pokemonDetails?.id}</PokemonIndex>
-            <PokemonName>{pokemonDetails.name}</PokemonName>
+            <PokemonName>{capitalizeFirstLetter(pokemonDetails.name)}</PokemonName>
             <PokemonTypes types={pokemonDetails?.types} />
             <Pokeball />
             <PokemonSVG
@@ -46,8 +47,10 @@ function SinglePokeCard({ index, selectedOption = "" }) {
         </SinglePokemonContainer>
     );
 
-    if (selectedOption === pokemonDetails?.types[0]?.type?.name) return card;
     if (selectedOption === '') return card;
+    if (selectedOption === 'Legendary') return pokemonDetails.legendary ? card : null;
+    if (selectedOption === 'Mythical') return pokemonDetails.mythical ? card : null;
+    if (selectedOption === pokemonDetails?.types[0]?.type?.name) return card;
     return null;
 }
 

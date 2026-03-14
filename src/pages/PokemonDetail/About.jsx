@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { capitalizeFirstLetter } from "../../utils/stringUtils";
 import { FlexColumnContainer, PrevButton, MoreInfoSubtitle,  NextButton, AboutInfoContainer, AboutImgTitle, AboutImgContainer, AboutTextContainer } from "./MoreInfo.styled";
 import { AboutSVG } from "./MoreInfo.styled"
 
@@ -39,7 +40,7 @@ function About({ memoPokemon }) {
     return (
         <FlexColumnContainer>
             <MoreInfoSubtitle>
-                About {memoPokemon.name}
+                About {capitalizeFirstLetter(memoPokemon.name)}
             </MoreInfoSubtitle>
             <AboutInfoContainer>
                 <AboutImgContainer>

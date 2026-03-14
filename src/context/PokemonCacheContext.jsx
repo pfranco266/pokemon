@@ -65,7 +65,7 @@ export const PokemonCacheProvider = ({ children }) => {
     // Returns null for any index beyond the valid species range so callers
     // can skip rendering rather than firing a request that will 404.
     const fetchPokemonDetail = async (index) => {
-        if (listState.totalCount !== null && index > listState.totalCount) return null;
+        if (typeof index === 'number' && listState.totalCount !== null && index > listState.totalCount) return null;
 
         if (detailCache.current.has(index)) {
             return detailCache.current.get(index);

@@ -70,9 +70,6 @@ export const ButtonContainer = styled.div`
 
 
 
-export const LoadMore = styled.button`
-
-`
 
 export const HitPoints = styled.div`
   position: absolute;

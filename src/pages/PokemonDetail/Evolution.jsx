@@ -1,5 +1,5 @@
 import React from "react";
-import {EvolutionChainSVG, EvolutionGridContainer, EvolutionItem, EvolutionName, EvolutionOuterContainer} from "./MoreInfo.styled"
+import {EvolutionChainSVG, EvolutionGridContainer, EvolutionItem, EvolutionName} from "./MoreInfo.styled"
 import SinglePokeCard from "../Collection/SinglePokeCard";
 
 function Evolution({  memoPokemon }) {

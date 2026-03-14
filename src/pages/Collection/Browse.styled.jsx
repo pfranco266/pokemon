@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../../utils/theme";
 import { HomeContainer } from "../Home/Home.styled";
 import colorMap from "../../utils/colorMap";
 import { keyframes } from 'styled-components';
@@ -139,9 +140,7 @@ top: 2%;
 left: 5%;
 `
 
-export const LearnMore = styled.button`
 
-`
 export const TypesContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -244,7 +243,7 @@ export const StyledLabel = styled.label`
 
 export const StyledSelect = styled.select`
 padding: 10px;
-border: 4px solid #3b4cca;
+border: 4px solid ${colors.formBorder};
 border-radius: 5px;
 font-size: 16px;
 outline: none;
@@ -255,7 +254,7 @@ transition: border-color 0.3s ease;
 &:focus {
   border-color: #007bff;
 }
-&: hover{
+&:hover{
   cursor: pointer;
 }
 @media(max-width: 1350px) {

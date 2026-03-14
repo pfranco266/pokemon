@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { capitalizeFirstLetter } from "../../utils/stringUtils";
 import { Heading, HeaderTitleContainer, LandingSVG, PokemonTitle, PokeNumber, HeadingContainer, BackButton, MythicalBanner, LegendaryBanner } from "./MoreInfo.styled";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
@@ -35,7 +36,7 @@ return (
                     #{memoPokemon.id}
                 </PokeNumber>
                 <PokemonTitle>
-                    {memoPokemon.name}
+                    {capitalizeFirstLetter(memoPokemon.name)}
                 </PokemonTitle>
             </HeaderTitleContainer>
             <LandingSVG

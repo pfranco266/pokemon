@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../../utils/theme";
 import { Link as RouterLink } from 'react-router-dom';
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { PiFlyingSaucerDuotone } from "react-icons/pi";
@@ -80,7 +81,7 @@ export const AmountContainer = styled.div`
     top: 70%;
     left: 70%;
     border-radius: 50%;
-    border: 2px solid #3b4cca;
+    border: 2px solid ${colors.formBorder};
     height: 100%;
     width: 100%;
     background: #ffcc00; 
@@ -95,7 +96,7 @@ export const AmountContainer = styled.div`
 `
 
 export const CartAmount = styled.span`
-    color: #3b4cca;
+    color: ${colors.formBorder};
 
 
 `

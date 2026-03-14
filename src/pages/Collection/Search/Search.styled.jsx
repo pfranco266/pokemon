@@ -1,9 +1,10 @@
 import styled from 'styled-components';
+import { colors } from '../../../utils/theme';
 
 
 export const SearchInput = styled.input`
   padding: 10px;
-  border: 4px solid #3b4cca;
+  border: 4px solid ${colors.formBorder};
   border-radius: 5px;
   font-size: 16px;
   outline: none;
@@ -21,9 +22,9 @@ export const SearchInput = styled.input`
 
 export const SearchButton = styled.button`
 padding: 10px;
-border: 4px solid #3b4cca;
+border: 4px solid ${colors.formBorder};
 background-color: #ffcc00;
-color: #3b4cca;
+color: ${colors.formBorder};
 border-radius: 5px;
 font-size: 16px;
 font-weight: bold;
@@ -34,7 +35,7 @@ transition: border-color 0.3s ease;
 &:focus {
   border-color: #007bff;
 }
-&: hover{
+&:hover{
   cursor: pointer;
 }
 

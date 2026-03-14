@@ -240,9 +240,6 @@ export const EvolutionItem = styled.div`
 
     
 `;
-export const EvolutionOuterContainer = styled.div`
-
-`
 
 
 export const EvolutionChainSVG = styled.img`
