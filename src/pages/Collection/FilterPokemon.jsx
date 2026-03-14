@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import colorMap from "../Pokemon/colorMap";
+import colorMap from "../../utils/colorMap";
 import { ClearButton, StyledMdClear, FilterContainer, FilterPokemonOuterContainer, DropdownButtonContainer, StyledLabel, StyledSelect } from "./Browse.styled";
 
 function FilterPokemon({ selectedOption, setSelectedOption }) {

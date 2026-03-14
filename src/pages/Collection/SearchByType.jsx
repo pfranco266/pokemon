@@ -1,5 +1,5 @@
 import React from "react";
-import colorMap from "../Pokemon/colorMap";
+import colorMap from "../../utils/colorMap";
 import PokemonTypes from "./PokemonTypes";
 import {ColorFilterContainer} from './Browse.styled'
 

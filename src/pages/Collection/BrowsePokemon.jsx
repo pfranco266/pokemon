@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { BrowseContainer, OuterBrowseContainer, DropdownButtonContainer } from "./Browse.styled";
-import { LoadMore } from "../Pokemon/Pokemon.styled";
-import { fetchPokeList } from "../Reducers/pokeAPI";
-import { pokeListReducer, initialPokeList } from "../Reducers/pokemonListReducer";
+import { LoadMore } from "../../components/PokemonCard/Pokemon.styled";
+import { fetchPokeList } from "../../api/pokeAPI";
+import { pokeListReducer, initialPokeList } from "../../reducers/pokemonListReducer";
 import SinglePokeCard from "./SinglePokeCard";
 
 function BrowsePokemon({ selectedOption, autoCompleteList, setAutoCompleteList }) {

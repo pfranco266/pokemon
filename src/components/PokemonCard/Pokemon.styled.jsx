@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import colorMap from './colorMap';
-import { SearchButton } from "../Collection/Search/Search.styled";
+import colorMap from '../../utils/colorMap';
+import { SearchButton } from "../../pages/Collection/Search/Search.styled";
 
 
 

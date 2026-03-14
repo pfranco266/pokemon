@@ -1,5 +1,5 @@
 import React from "react";
-import { PokeballContainer, PokeballSVG } from "./Browse.styled";
+import { PokeballContainer, PokeballSVG } from "../../pages/Collection/Browse.styled";
 
 
 function Pokeball () {

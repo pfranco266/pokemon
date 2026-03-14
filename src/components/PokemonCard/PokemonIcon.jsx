@@ -1,6 +1,6 @@
 import React from "react";
 
-import colorMap from "./colorMap";
+import colorMap from "../../utils/colorMap";
 
 
 function PokemonIcon ({type}) {

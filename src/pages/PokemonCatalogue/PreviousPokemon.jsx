@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from "react";
-import { PreviousEvoSprite, PreviousEvolutionContainer, PreviousEvolutionName, PreviousEvolutionEvolve } from "./Pokemon.styled";
+import { PreviousEvoSprite, PreviousEvolutionContainer, PreviousEvolutionName, PreviousEvolutionEvolve } from "../../components/PokemonCard/Pokemon.styled";
 
 function PreviousPokemon({cardPokemon, backgroundType, capitalizeFirstLetter}) {
     

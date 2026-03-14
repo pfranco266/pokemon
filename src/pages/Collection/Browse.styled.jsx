@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { HomeContainer } from "../Home/Home.styled";
-import colorMap from "../Pokemon/colorMap";
+import colorMap from "../../utils/colorMap";
 import { keyframes } from 'styled-components';
 import { Link } from "react-router-dom";
 import { MdClear } from "react-icons/md";

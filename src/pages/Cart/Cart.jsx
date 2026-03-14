@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { Title, Total, TotalContainer, SubTotal, FinalTotal, Container, SummaryTitle } from "./Cart.styled";
-import CartContext from "../../CartContext";
-import PokemonCard from "../Pokemon/PokemonCard";
-import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddtoCartButton, ButtonContainer } from "../Pokemon/Pokemon.styled";
+import CartContext from "../../context/CartContext";
+import PokemonCard from "../../components/PokemonCard/PokemonCard";
+import { GridItems, PokemonGridItem, Price, PokemonGridContainer, AddtoCartButton, ButtonContainer } from "../../components/PokemonCard/Pokemon.styled";
 import { Link } from "react-router-dom";
 import { LandingBodyContainer } from "../Home/Home.styled";
 

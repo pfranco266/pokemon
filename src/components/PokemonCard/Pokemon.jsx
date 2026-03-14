@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import { PokemonGridContainer, PokemonGridItem, PokeContainer, AddToCart, AddtoCartButton, GridItems, Price, AddToCartNotification } from "./Pokemon.styled";
 import PokemonCard from "./PokemonCard"
-import CartContext from "../../CartContext";
-import { fetchPokeList } from "../Reducers/pokeAPI"
-import { initialPokeList, pokeListReducer } from "../Reducers/pokemonListReducer"
-import { SearchButton } from "../Collection/Search/Search.styled";
+import CartContext from "../../context/CartContext";
+import { fetchPokeList } from "../../api/pokeAPI"
+import { initialPokeList, pokeListReducer } from "../../reducers/pokemonListReducer"
+import { SearchButton } from "../../pages/Collection/Search/Search.styled";
 // import { v4 as uuid } from 'uuid';
 
 

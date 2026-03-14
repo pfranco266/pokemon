@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { LandingSVG } from "../PokemonMoreInfo/MoreInfo.styled";
+import { LandingSVG } from "../PokemonDetail/MoreInfo.styled";
 
 export const Title = styled.h1`
 text-align: center;

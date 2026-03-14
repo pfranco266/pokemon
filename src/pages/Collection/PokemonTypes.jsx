@@ -1,6 +1,6 @@
 import React from "react";
 import {TypesContainer, Types} from "./Browse.styled"
-import colorMap from "../Pokemon/colorMap";
+import colorMap from "../../utils/colorMap";
 
 
 function PokemonTypes({ types }) {

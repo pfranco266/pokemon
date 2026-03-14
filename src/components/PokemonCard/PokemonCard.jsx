@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useReducer } from "react";
 import { ResistanceDescription, GenerationDescription, IndividualPokeContainer, PokeType, PokeHeightWeight, GenerationContainer, WeaknessContainer, ElementContainer, ResistanceContainer, PokemonMoveContainer, PokemonDescriptionContainer, PokemonDescription, InfoContainer, HitPoints, Name, SpriteContainer, Sprite } from "./Pokemon.styled";
-import PreviousPokemon from "./PreviousPokemon";
+import PreviousPokemon from "../../pages/PokemonCatalogue/PreviousPokemon";
 import PokemonWeak from "./PokemonWeak"
-import { pokemonReducer, initialPokeDetails } from "../Reducers/pokemonReducer";
-import { fetchSinglePokemon, fetchEvolutionData } from "../Reducers/pokeAPI";
+import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
+import { fetchSinglePokemon, fetchEvolutionData } from "../../api/pokeAPI";
 
 function PokemonCard({ index }) {
 

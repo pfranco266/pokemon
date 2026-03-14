@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { Title, HomeContainer, PokemonCatalog  } from "../Home/Home.styled";
-import Pokemon from "../Pokemon/Pokemon"
+import Pokemon from "../../components/PokemonCard/Pokemon"
 
 
 function PokemonCatalogFC () {

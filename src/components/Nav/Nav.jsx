@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import { Link, NavContainer, NavBar, } from "./Nav.styled";
-import CartContext from "../../CartContext";
-import Cart from "./Cart"
+import CartContext from "../../context/CartContext";
+import Cart from "./CartIcon"
 
 
 

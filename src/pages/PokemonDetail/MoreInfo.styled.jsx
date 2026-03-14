@@ -1,4 +1,4 @@
-import colorMap from "../Pokemon/colorMap";
+import colorMap from "../../utils/colorMap";
 import { Link } from 'react-router-dom';
 import { LuSword } from "react-icons/lu";
 import { PiShieldPlusDuotone } from "react-icons/pi";

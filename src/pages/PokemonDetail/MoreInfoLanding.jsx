@@ -1,7 +1,7 @@
 import React, {useReducer,useMemo, useEffect} from "react";
 import { useParams } from "react-router-dom";
-import { pokemonReducer, initialPokeDetails } from "../Reducers/pokemonReducer";
-import { fetchSinglePokemon, fetchEvolutionData } from "../Reducers/pokeAPI";
+import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
+import { fetchSinglePokemon, fetchEvolutionData } from "../../api/pokeAPI";
 import MoreInfoHeading from "./MoreInfoHeading";
 import MoreInfoBody from "./MoreInfoBody"
 import { HomeContainer } from "../Home/Home.styled";

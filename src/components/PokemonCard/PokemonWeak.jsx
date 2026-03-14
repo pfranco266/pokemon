@@ -1,5 +1,5 @@
 import React from "react"
-import colorMap from "./colorMap";
+import colorMap from "../../utils/colorMap";
 import PokemonIcon from "./PokemonIcon"
 
 

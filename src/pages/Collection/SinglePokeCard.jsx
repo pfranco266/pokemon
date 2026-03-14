@@ -1,9 +1,9 @@
 import React, {useEffect, useReducer, useMemo, isValidElement} from "react";
-import { fetchSinglePokemon, fetchEvolutionData } from "../Reducers/pokeAPI";
-import { pokemonReducer, initialPokeDetails } from "../Reducers/pokemonReducer";
+import { fetchSinglePokemon, fetchEvolutionData } from "../../api/pokeAPI";
+import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
 import {PokemonSVG, SinglePokemonContainer, PokemonName, PokemonIndex} from "./Browse.styled"
 import PokemonTypes from "./PokemonTypes"
-import Pokeball from "./Pokeball";
+import Pokeball from "../../components/Pokeball/Pokeball";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 
 
