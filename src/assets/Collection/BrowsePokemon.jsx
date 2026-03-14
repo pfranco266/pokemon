@@ -101,3 +101,43 @@ function BrowsePokemon({ selectedOption, autoCompleteList, setAutoCompleteList }
 }
 
 export default BrowsePokemon;
+
+
+
+const movies = [
+    { title: "The Matrix", genre: "Sci-Fi", rating: 9 },
+    { title: "Inception", genre: "Sci-Fi", rating: 8 },
+    { title: "Interstellar", genre: "Sci-Fi", rating: 10 },
+    { title: "The Dark Knight", genre: "Action", rating: 9 },
+    { title: "Gladiator", genre: "Action", rating: 8 },
+    { title: "The Shawshank Redemption", genre: "Drama", rating: 10 },
+    { title: "Forrest Gump", genre: "Drama", rating: 9 }
+  ];
+
+  function groupBy (arr) {
+    if(arr.length < 1) return [];
+
+    const copyArr = [...arr];
+    const movieObj = {}
+
+    copyArr.forEach(movie => {
+        if(!movieObj[movie.genre]) {
+            movieObj[movie.genre] = [];
+        }
+        movieObj[movie.genre] = [movie.title, movie.rating];
+    });
+
+    for(let [key, value] of Object.entries(movieObj)) {
+
+    }
+
+  }
+
+
+  const oo = {
+    genre: [
+        {title: 'movie', 
+            space: 'left'
+        }
+    ]
+  }
