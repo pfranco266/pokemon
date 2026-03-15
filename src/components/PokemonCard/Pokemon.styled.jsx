@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import colorMap from '../../utils/colorMap';
+import { Link } from 'react-router-dom';
 import { SearchButton } from "../../pages/Collection/Search/Search.styled";
 
 
@@ -124,10 +125,11 @@ export const PreviousEvoSprite = styled.img`
   height: 60px;
 `
 
-export const PreviousEvolutionContainer = styled.div`
-  display: flex; 
+export const PreviousEvolutionContainer = styled(Link)`
+  display: flex;
   flex-direction: column;
   align-items: center;
+  text-decoration: none;
 
   width: 18%;
   height: 18%;

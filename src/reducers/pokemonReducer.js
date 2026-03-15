@@ -24,7 +24,10 @@ const initialPokeDetails = {
     species: {},
     types: [],
     moves: [],
-    evolutionTree: {},
+    isLinearChain: false,
+    evolutionChainStages: [],
+    evolutionTree: { evolvesFrom: null, nextEvolutions: [] },
+    nextEvolutions: [],
     description: [],
     loading: true,
     error: null
@@ -37,21 +40,51 @@ function pokemonReducer(state, action) {
       case 'setPokemonDetails':
         const { pokemonDetailData, pokemonSpeciesData, evolutionData } = action.payload;
 
-        const extractEvolutions = (chain) => {
-          const evolutions = [];
-          let current = chain;
-          while (current) {
-            evolutions.push({
-              name: current.species.name,
-              id: current.species.url.split('/').filter(Boolean).pop(),
-              sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${current.species.url.split('/').filter(Boolean).pop()}.svg`
-            });
-            current = current.evolves_to[0];
-          }
-          return evolutions;
+        const getSpeciesId = (node) => parseInt(node.species.url.split('/').filter(Boolean).pop());
+
+        // True when every node in the chain has at most one evolution (no branching)
+        const checkLinear = (node) => {
+          if (node.evolves_to.length > 1) return false;
+          if (node.evolves_to.length === 1) return checkLinear(node.evolves_to[0]);
+          return true;
         };
-  
-        const evolutions = extractEvolutions(evolutionData.chain);
+
+        // Flatten a linear chain root-to-leaf into an ordered array
+        const extractLinearChain = (root) => {
+          const stages = [];
+          let current = root;
+          while (current) {
+            stages.push({ name: current.species.name, id: getSpeciesId(current) });
+            current = current.evolves_to[0] ?? null;
+          }
+          return stages;
+        };
+
+        // Find current Pokemon's node anywhere in the tree (used for branching chains)
+        const findNode = (chain, targetId) => {
+          if (getSpeciesId(chain) === targetId) return chain;
+          for (const branch of chain.evolves_to) {
+            const found = findNode(branch, targetId);
+            if (found) return found;
+          }
+          return null;
+        };
+
+        const evolvesFrom = evolutionData.evolvesFrom
+          ? { name: evolutionData.evolvesFrom.name, id: evolutionData.evolvesFrom.id }
+          : null;
+
+        const linear = checkLinear(evolutionData.chain);
+
+        // LINEAR: extract the full ordered chain so every stage shows the complete tree.
+        // BRANCHING: find the current node's direct children (Eevee's 8 branches, etc.)
+        const evolutionChainStages = linear ? extractLinearChain(evolutionData.chain) : [];
+        const nextEvolutions = linear
+          ? []
+          : (findNode(evolutionData.chain, pokemonSpeciesData.id)?.evolves_to?.map(branch => ({
+              name: branch.species.name,
+              id: getSpeciesId(branch),
+            })) ?? []);
         return {
           ...state,
           id: pokemonDetailData.id,
@@ -128,11 +161,13 @@ sprites : [
             specialDefense: pokemonDetailData.stats[4].base_stat,
             speed: pokemonDetailData.stats[5].base_stat,
           },
-          evolutions,
+          isLinearChain: linear,
+          evolutionChainStages,
+          nextEvolutions,
           species: evolutionData,
           types: pokemonDetailData.types,
           moves: pokemonDetailData.moves,
-          evolutionTree: evolutionData,
+          evolutionTree: { evolvesFrom, nextEvolutions },
           description: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[0]?.flavor_text),
           description2: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[2]?.flavor_text),
           description3: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[3]?.flavor_text),

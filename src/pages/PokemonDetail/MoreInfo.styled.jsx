@@ -183,8 +183,8 @@ export const BodyContainer = styled.main`
 export const EvolutionGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(1, 400px);
-  grid-auto-rows: minmax(300px, auto); 
-  justify-content: space-evenly; 
+  grid-auto-rows: minmax(300px, auto);
+  justify-content: center;
   margin-bottom: 5rem;
   gap: 75px;
 
@@ -194,30 +194,18 @@ export const EvolutionGridContainer = styled.div`
 
   @media(min-width: 400px) {
     grid-template-columns: repeat(1, 400px);
-
-    gap: 75px;
-  }
-  @media(min-width: 900px) {
-    grid-template-columns: repeat(2, 400px);
-    gap: 75px;
   }
 
   @media(min-width: 1000px) {
-
+    grid-template-columns: ${({ count }) => count >= 2 ? 'repeat(2, 400px)' : 'repeat(1, 400px)'};
   }
 
   @media(min-width: 1350px) {
-    grid-template-columns: ${({ count }) => {
-      if (count === 3) return 'repeat(3, 400px)';
-      if (count === 2) return 'repeat(2, 400px)';
-      return '400px';
-    }};
-    
-    ${({ count }) =>
-      count === 1 &&
-      `
-      max-width: 500px;
-    `}
+    grid-template-columns: ${({ count }) =>
+      count >= 3 ? 'repeat(3, 400px)' :
+      count === 2 ? 'repeat(2, 400px)' :
+      'repeat(1, 400px)'
+    };
   }
 `;
 
