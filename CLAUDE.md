@@ -345,3 +345,69 @@ Consistent breakpoints used across the app (mobile-first, `min-width`):
 - **Type filter options** — memoized with `useMemo([], [])` in `FilterPokemon.jsx` since `colorMap` is static
 - **List pagination** — `/pokemoncards` loads one page at a time (Load More button); `/collection` loads all pages on mount via `fetchAllListPages()`
 
+---
+
+## Pokémon Detail Page Features
+
+### Prev / Next Navigation (`MoreInfoLanding.jsx`)
+
+`PrevPokeButton` and `NextPokeButton` are fixed to the vertical center of the viewport edges. Both are styled with `typeColor` (`colorMap[primaryType]?.color ?? '#ffcc00'`) as the icon color and use `IoMdArrowRoundBack` (mirrored for Next via `rotateY(180deg)`).
+
+- `PrevPokeButton` hidden when `pokemonId <= 1`
+- `NextPokeButton` hidden when `pokemonId >= totalCount` (from `listState.totalCount`)
+- Navigation calls `navigate(\`/collection/${pokemonId ± 1}\`)`
+
+### Habitat Banner (`About.jsx`)
+
+Rendered directly below the "About [Name]" subtitle, before the sprite/text section.
+
+- Full-width banner, `border-radius: 8px`, `padding: 0.85rem`
+- Background: `colorMap[primaryType].color`; border top/bottom: `colorMap[primaryType].darkerColor`
+- Null habitat: grey background `#424242`, border `#333`, text "Unknown Habitat"
+- Contains an inline SVG Google Maps–style pin (Material Design `location_on` path, white, 22px) + capitalized habitat name
+- `HabitatBanner` in `MoreInfo.styled.jsx` is a flex row (`align-items: center; justify-content: center; gap: 0.5em`)
+- Requires `colorMap` import in `About.jsx`; props: `typecolor`, `darkercolor`
+
+### Capture Rate (`Stats.jsx`)
+
+Stored in `pokemonReducer` state as `capture_rate: pokemonSpeciesData.capture_rate ?? null`.
+
+- Displayed inside a collapsible accordion below the Base Stat Total bar
+- `CAPTURE_MAX = 255`; bar percentage = `Math.round((rate / 255) * 100)`
+- 6-tier difficulty label from `getCaptureLabel(rate)`:
+
+| Rate | Label |
+|------|-------|
+| ≥ 200 | Very Easy |
+| ≥ 150 | Easy |
+| ≥ 100 | Moderate |
+| ≥ 45 | Difficult |
+| ≥ 10 | Very Difficult |
+| < 10 | Near Impossible |
+
+- Uses the same `TBSContainer` / `TBSBarTrack` / `TBSBarFill` styled components as the Base Stat Total
+- Not rendered if `capture_rate` is null
+- The accordion toggle (gold circular button, `AccordionToggle`) is at the bottom of the TBS card; `AccordionChevron` rotates ±90° via `isopen` prop
+
+### Radar Chart (`Stats.jsx`)
+
+Permanently visible below the accordion, never inside it. Wrapped in `BattleRoleContainer` (black bg, yellow border) alongside a stat legend.
+
+**Layout:** `StatsSideBySide` flex row — chart left (55%), legend right (45%). Stacks vertically below 700px.
+
+**SVG details:**
+- `viewBox="0 0 300 300"`, `CX=150, CY=150, R=85` (chart radius), `LABEL_R=112` (icon radius), `NUM_R=132` (number radius)
+- 6 axes at 60° intervals, starting at top (−90°): HP → Attack → Defense → Sp.Atk → Sp.Def → Speed
+- Non-linear scale: `Math.pow(rawStat / 255, 0.6)` — amplifies differences between stats
+- Grid rings at 25/50/75/100% of R, dashed except outermost: `rgba(255,255,255,0.4)`
+- Axis lines center→tip: `rgba(255,255,255,0.8)`
+- Data polygon: `fill="rgba(255,255,255,0.15)"`, `stroke="rgba(255,255,255,0.9)"`, `strokeWidth=2`
+- Stat icons (22px, inline style override) positioned as absolute HTML overlays at `LABEL_R` percentage coords
+- Stat values (0.95rem, white, bold) positioned as absolute `<span>` overlays at `NUM_R` — always outward from icons, never overlapping chart lines
+
+**Legend (right side):** `StatLegendSection` — one `StatLegendRow` per stat: icon at 24px + full stat name. No numbers in the legend (numbers are on the chart).
+
+### Attack Icon Color
+
+`AttackIcon` (`LuSword`) color changed from `navy` to `#90caf9` (light blue) for visibility at small sizes against dark backgrounds. No other icon colors changed.
+
