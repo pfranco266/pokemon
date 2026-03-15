@@ -327,6 +327,71 @@ export const AboutTextContainer = styled.div`
   }
 `
 
+export const TBSContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75em;
+  background-color: black;
+  border: 2px solid yellow;
+  border-radius: 10px;
+  width: 920px;
+  padding: 1.5em 2em;
+  margin-bottom: 2em;
+  @media(max-width: 980px) { width: 720px; }
+  @media(max-width: 768px) { width: 540px; }
+  @media(max-width: 540px) { width: 400px; padding: 1em 1.25em; }
+`;
+
+export const TBSLabel = styled.p`
+  font-size: 1.5em;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.87);
+  @media(max-width: 540px) { font-size: 1.1em; }
+`;
+
+export const TBSValue = styled.span`
+  font-size: ${({ exceptional }) => exceptional ? '4em' : '3em'};
+  font-weight: 900;
+  color: ${({ tiercolor }) => tiercolor};
+  text-shadow: ${({ exceptional, glowcolor }) =>
+    exceptional ? `0 0 6px ${glowcolor}` : 'none'};
+  @media(max-width: 540px) { font-size: ${({ exceptional }) => exceptional ? '3em' : '2em'}; }
+`;
+
+export const TBSBarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+`;
+
+export const TBSBarTrack = styled.div`
+  width: 100%;
+  height: 14px;
+  background-color: #242424;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #444;
+`;
+
+export const TBSBarFill = styled.div`
+  height: 100%;
+  width: ${({ pct }) => pct}%;
+  background-color: ${({ tiercolor }) => tiercolor};
+  border-radius: 8px;
+  transition: width 0.4s ease;
+`;
+
+export const TBSTierLabel = styled.span`
+  font-size: 1em;
+  font-weight: ${({ exceptional }) => exceptional ? '900' : 'bold'};
+  color: ${({ tiercolor }) => tiercolor};
+  white-space: nowrap;
+  text-align: center;
+  @media(max-width: 540px) { font-size: 0.85em; }
+`;
+
 export const StatsGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
