@@ -21,6 +21,8 @@ const initialPokeDetails = {
         specialDefense: null,
         speed: null
     },
+    capture_rate: null,
+    habitat: null,
     species: {},
     types: [],
     moves: [],
@@ -161,6 +163,8 @@ sprites : [
             specialDefense: pokemonDetailData.stats[4].base_stat,
             speed: pokemonDetailData.stats[5].base_stat,
           },
+          capture_rate: pokemonSpeciesData.capture_rate ?? null,
+          habitat: pokemonSpeciesData.habitat?.name ?? null,
           isLinearChain: linear,
           evolutionChainStages,
           nextEvolutions,
@@ -168,9 +172,14 @@ sprites : [
           types: pokemonDetailData.types,
           moves: pokemonDetailData.moves,
           evolutionTree: { evolvesFrom, nextEvolutions },
-          description: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[0]?.flavor_text),
-          description2: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[2]?.flavor_text),
-          description3: sanitizeFlavorText(pokemonSpeciesData.flavor_text_entries?.[3]?.flavor_text),
+          ...(() => {
+            const en = pokemonSpeciesData.flavor_text_entries?.filter(e => e.language.name === 'en') ?? [];
+            return {
+              description:  sanitizeFlavorText(en[0]?.flavor_text),
+              description2: sanitizeFlavorText(en[1]?.flavor_text),
+              description3: sanitizeFlavorText(en[2]?.flavor_text),
+            };
+          })(),
 
 
           error: '',

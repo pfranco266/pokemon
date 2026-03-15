@@ -444,7 +444,7 @@ export const StatsText = styled.p`
 export const AttackIcon = styled(LuSword)`
 height: 50px;
 width: 50px;
-color: navy;
+color: #90caf9;
 @media(max-width: 540px) {
   height: 30px;
   width: 30px;
@@ -482,6 +482,203 @@ color: grey;
 `
 
 
+
+// Battle Role Breakdown
+export const BattleRoleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75em;
+  background-color: black;
+  border: 2px solid yellow;
+  border-radius: 10px;
+  width: 920px;
+  padding: 1.5em 2em;
+  margin-bottom: 2em;
+  @media(max-width: 980px) { width: 720px; }
+  @media(max-width: 768px) { width: 540px; }
+  @media(max-width: 540px) { width: 400px; padding: 1em 1.25em; }
+`;
+
+export const BattleRoleRow = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 1em;
+  @media(max-width: 540px) { gap: 0.5em; }
+`;
+
+export const BattleRoleBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25em;
+  flex: 1;
+`;
+
+export const BattleRoleLabel = styled.p`
+  font-size: 1em;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.87);
+  text-align: center;
+  @media(max-width: 540px) { font-size: 0.8em; }
+`;
+
+export const BattleRoleValue = styled.span`
+  font-size: 2.5em;
+  font-weight: 900;
+  color: ${({ typecolor }) => typecolor};
+  @media(max-width: 540px) { font-size: 1.8em; }
+`;
+
+export const BattleRoleSublabel = styled.span`
+  font-size: 0.9em;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.6);
+  @media(max-width: 540px) { font-size: 0.75em; }
+`;
+
+// Stats accordion (Stats.jsx)
+export const AccordionToggle = styled.button`
+  background: none;
+  border: 2px solid #ffcc00;
+  color: #ffcc00;
+  border-radius: 50%;
+  width: 4em;
+  height: 4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 0.5em;
+  transition: background-color 0.2s;
+  &:hover { background-color: rgba(255, 204, 0, 0.1); }
+`;
+
+export const AccordionChevron = styled(IoMdArrowRoundBack)`
+  font-size: 2.2em;
+  transition: transform 0.3s ease;
+  transform: ${({ isopen }) => isopen ? 'rotate(90deg)' : 'rotate(-90deg)'};
+`;
+
+export const AccordionContent = styled.div`
+  overflow: hidden;
+  max-height: ${({ isopen }) => isopen ? '900px' : '0'};
+  transition: max-height 0.4s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const RadarChartContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5em auto;
+`;
+
+// Stats side-by-side layout (Stats.jsx)
+export const StatsSideBySide = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 1em;
+  @media (max-width: 700px) {
+    flex-direction: column;
+  }
+`;
+
+export const StatChartSection = styled.div`
+  flex: 0 0 55%;
+  display: flex;
+  justify-content: center;
+  @media (max-width: 700px) {
+    flex: none;
+    width: 100%;
+  }
+`;
+
+export const StatLegendSection = styled.div`
+  flex: 0 0 calc(45% - 1em);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  @media (max-width: 700px) {
+    flex: none;
+    width: 100%;
+  }
+`;
+
+export const StatLegendRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+`;
+
+export const StatLegendName = styled.span`
+  flex: 1;
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.87);
+`;
+
+export const StatLegendValue = styled.span`
+  font-size: 1em;
+  font-weight: 700;
+  color: ${({ statcolor }) => statcolor || '#ffcc00'};
+`;
+
+// Habitat (About.jsx)
+export const HabitatBanner = styled.div`
+  width: 100%;
+  background-color: ${({ typecolor }) => typecolor || '#424242'};
+  border-top: 2px solid ${({ darkercolor }) => darkercolor || '#333'};
+  border-bottom: 2px solid ${({ darkercolor }) => darkercolor || '#333'};
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  margin-top: 1em;
+  margin-bottom: 1.75rem;
+`;
+
+// Prev / Next Pokémon navigation (MoreInfoLanding.jsx)
+export const PrevPokeButton = styled.button`
+  position: fixed;
+  top: 50%;
+  left: 0.75em;
+  transform: translateY(-50%);
+  z-index: 200;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ffcc00;
+  color: ${({ typecolor }) => typecolor};
+  border-radius: 50%;
+  width: 3em;
+  height: 3em;
+  font-size: 1.5em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  &:hover { background-color: rgba(0, 0, 0, 0.92); }
+  @media(max-width: 768px) { width: 2.2em; height: 2.2em; font-size: 1.1em; left: 0.4em; }
+`;
+
+export const NextPokeButton = styled(PrevPokeButton)`
+  left: unset;
+  right: 0.75em;
+  @media(max-width: 768px) { right: 0.4em; left: unset; }
+`;
 
 export const AbilitiesGridContainer = styled.div`
   display: grid;

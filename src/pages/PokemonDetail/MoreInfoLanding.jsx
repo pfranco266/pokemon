@@ -1,16 +1,20 @@
 import React, { useReducer, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
 import { usePokemonCache } from "../../context/PokemonCacheContext";
 import MoreInfoHeading from "./MoreInfoHeading";
 import MoreInfoBody from "./MoreInfoBody";
 import { HomeContainer } from "../Home/Home.styled";
-import { Link } from "react-router-dom";
+import { PrevPokeButton, NextPokeButton } from "./MoreInfo.styled";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import colorMap from "../../utils/colorMap";
 
 function MoreInfoLanding() {
     const params = useParams();
     const pokeId = params?.id;
-    const { fetchPokemonDetail } = usePokemonCache();
+    const navigate = useNavigate();
+    const { fetchPokemonDetail, listState } = usePokemonCache();
+    const totalCount = listState.totalCount;
 
     const [pokemonDetails, setPokemonDetails] = useReducer(pokemonReducer, initialPokeDetails);
 
@@ -52,8 +56,30 @@ function MoreInfoLanding() {
         );
     }
 
+    const pokemonId = pokemonDetails.id;
+    const primaryType = pokemonDetails.types?.[0]?.type?.name;
+    const typeColor = colorMap[primaryType]?.color ?? '#ffcc00';
+
     return (
         <>
+            {pokemonId > 1 && (
+                <PrevPokeButton
+                    typecolor={typeColor}
+                    onClick={() => navigate(`/collection/${pokemonId - 1}`)}
+                    aria-label="Previous Pokémon"
+                >
+                    <IoMdArrowRoundBack />
+                </PrevPokeButton>
+            )}
+            {pokemonId && (!totalCount || pokemonId < totalCount) && (
+                <NextPokeButton
+                    typecolor={typeColor}
+                    onClick={() => navigate(`/collection/${pokemonId + 1}`)}
+                    aria-label="Next Pokémon"
+                >
+                    <IoMdArrowRoundBack style={{ transform: 'rotateY(180deg)' }} />
+                </NextPokeButton>
+            )}
             <MoreInfoHeading memoPokemon={pokemonDetails} />
             <MoreInfoBody memoPokemon={pokemonDetails} />
         </>
