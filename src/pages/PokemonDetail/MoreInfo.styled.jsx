@@ -651,6 +651,26 @@ export const HabitatBanner = styled.div`
   margin-bottom: 1.75rem;
 `;
 
+// Type badges (MoreInfoHeading.jsx)
+export const TypeBadgesRow = styled.div`
+    display: flex;
+    gap: 0.5em;
+    margin-top: 0.4em;
+`;
+
+export const TypeBadge = styled.span`
+    display: inline-block;
+    padding: 0.25em 0.65em;
+    border-radius: 4px;
+    background: ${({ typecolor }) => typecolor ? `${typecolor}33` : 'rgba(255,255,255,0.1)'};
+    border: 1px solid ${({ typecolor }) => typecolor ?? 'rgba(255,255,255,0.3)'};
+    color: ${({ typecolor }) => typecolor ?? 'rgba(255,255,255,0.8)'};
+    font-size: 0.78rem;
+    font-family: 'Russo One', sans-serif;
+    text-transform: capitalize;
+    white-space: nowrap;
+`;
+
 // Prev / Next Pokémon navigation (MoreInfoLanding.jsx)
 export const PrevPokeButton = styled.button`
   position: fixed;

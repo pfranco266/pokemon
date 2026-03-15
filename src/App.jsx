@@ -5,6 +5,12 @@ import { Routes, Route} from 'react-router-dom';
 import React from 'react';
 import { CartProvider } from './context/CartContext';
 import { PokemonCacheProvider } from './context/PokemonCacheContext';
+import { AbilitiesCacheProvider } from './context/AbilitiesCacheContext';
+import { MovesCacheProvider } from './context/MovesCacheContext';
+import AbilitiesLanding from './pages/Abilities/AbilitiesLanding';
+import AbilityDetail from './pages/Abilities/AbilityDetail';
+import MovesLanding from './pages/Moves/MovesLanding';
+import MoveDetail from './pages/Moves/MoveDetail';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -19,6 +25,8 @@ function App() {
         <Container >
             <CartProvider>
             <PokemonCacheProvider>
+            <AbilitiesCacheProvider>
+            <MovesCacheProvider>
 
               <Nav/>
               <Routes>
@@ -27,8 +35,14 @@ function App() {
                   <Route path="/collection/:id" element={<MoreInfoLanding/>}/>
                   <Route path="/pokemoncards" element={<PokemonCatalogFC />}/>
                   <Route path="/cart" element={<Cart />}/>
+                  <Route path="/abilities" element={<AbilitiesLanding />}/>
+                  <Route path="/abilities/:name" element={<AbilityDetail />}/>
+                  <Route path="/moves" element={<MovesLanding />}/>
+                  <Route path="/moves/:name" element={<MoveDetail />}/>
               </Routes>
 
+            </MovesCacheProvider>
+            </AbilitiesCacheProvider>
             </PokemonCacheProvider>
             </CartProvider>
               <Footer/>

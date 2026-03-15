@@ -411,3 +411,180 @@ Permanently visible below the accordion, never inside it. Wrapped in `BattleRole
 
 `AttackIcon` (`LuSword`) color changed from `navy` to `#90caf9` (light blue) for visibility at small sizes against dark backgrounds. No other icon colors changed.
 
+### Type Badges (`About.jsx`)
+
+Rendered directly below the "About [Name]" subtitle, above the `HabitatBanner`.
+
+- One `TypeBadge` per type (1 or 2), in a `TypeBadgesRow` flex row with `gap: 0.5em`
+- Both components defined in `MoreInfo.styled.jsx`
+- Color sourced from `colorMap[typeName]?.color`; badge background uses `${color}33` (20% alpha), border uses solid color
+- `capitalizeFirstLetter` applied to each type name for display
+- **Not** in the header — removed from `MoreInfoHeading.jsx` to avoid overlapping the legendary/mythical animated banner
+
+### Detail Page Section Order (`MoreInfoBody.jsx`)
+
+```
+About → Stats → Moves → PokemonAbilities → Evolution
+```
+
+- "Natural Abilities" section renamed to **"Moves"** (`Moves.jsx`) — shows level-up moves sorted by level
+- Each move name is a gold `Link` to `/moves/:name` (styled `MoveLink` in `Moves.jsx`)
+- `PokemonAbilities` moved to after Moves:
+  - Standard (non-hidden) abilities shown as gold `Link`s to `/abilities/:name`
+  - Hidden abilities in a collapsible accordion (`AccordionToggle` / `AccordionChevron` / `AccordionContent` from `MoreInfo.styled.jsx`), default collapsed
+  - Hidden ability names also link to `/abilities/:name` with `HiddenBadge` next to them
+  - `abilities` field on `pokemonReducer` state: `[{ name, isHidden, slot }]`
+
+### Sprite Fallback — Header (`MoreInfoHeading.jsx`)
+
+Same pattern as `SinglePokeCard.jsx`: dream-world SVG attempted first, `onError` swaps to official-artwork PNG:
+
+```jsx
+onError={(e) => {
+    e.currentTarget.onError = null;
+    e.currentTarget.src = `...official-artwork/${memoPokemon.id}.png`;
+}}
+```
+
+Fixes broken sprites for Gen 6+ Pokémon (Aegislash, Meowstic, Furfrou, etc.).
+
+---
+
+## Abilities System
+
+### Context (`AbilitiesCacheContext.jsx`)
+
+Wraps the full app in `App.jsx`. Exposes:
+
+```js
+const { abilities, loading, fullyLoaded, fetchAbilities, fetchAbilityDetail } = useAbilitiesCache();
+```
+
+- **`fetchAbilities()`** — fetches all ~400 abilities from `/ability?limit=400`, batch-fetches full detail in groups of 20, stores `{ name, shortEffect }` in state; falls back to `flavor_text_entries` if `effect_entries` is empty; incremental display as batches complete
+- **`fetchAbilityDetail(name)`** — fetches `/ability/:name`, caches full raw response in `detailCacheRef` (separate `Map` from listing data); returns from cache on repeat calls
+
+### Listing Page (`/abilities`)
+
+- Page title, gold decorative line, clarification description paragraph below the line
+- Real-time search filtering against ability name (spaces → hyphens before comparing)
+- Alternating row backgrounds, gold left-border on hover, each row links to `/abilities/:name`
+- `NoDescription` fallback for abilities with no effect text
+
+### Detail Page (`/abilities/:name`)
+
+Sections in order:
+1. Back link, page title, gold line, generation badge ("Introduced in Generation X")
+2. **Effect** — full `effect_entries[en].effect` with `$effect_chance$` not replaced (no `effect_chance` field on abilities)
+3. **Game Descriptions** — `flavor_text_entries` filtered to English, consecutive duplicates removed, version badge + text in 2-column grid
+4. **Pokémon with this Ability** — split into "Standard Ability" and "Hidden Ability" subsections; filtered to base forms only (ID ≤ 1025), deduplicated by name, each links to `/collection/:id`
+
+### Alternate Form Filtering
+
+Any Pokémon list that comes from an ability or move endpoint uses:
+
+```js
+const isBaseForm = (p) => parseInt(p.pokemon.url.split('/').filter(Boolean).pop()) <= 1025;
+```
+
+IDs > 1025 are alternate forms (mega evolutions, regional variants, battle bonds). After filtering, deduplicate by name in case the same base species appears twice.
+
+---
+
+## Moves System
+
+### Context (`MovesCacheContext.jsx`)
+
+Wraps the full app in `App.jsx` inside `AbilitiesCacheProvider`. Exposes:
+
+```js
+const { moves, loading, fullyLoaded, fetchMoves, fetchMoveDetail } = useMovesCache();
+```
+
+- **`fetchMoves()`** — fetches all ~1000 moves from `/move?limit=1000`, batch-fetches full detail in groups of 20; stores summary rows in state; **also caches full detail data** in `detailCacheRef` during the batch, so navigating to a detail page after the listing is loaded is instant; `$effect_chance$` placeholders replaced with `move.effect_chance` value at cache time
+- **`fetchMoveDetail(name)`** — checks `detailCacheRef` first (populated during batch), fetches `/move/:name` only if not already cached
+
+### Listing Page (`/moves`)
+
+**File:** `src/pages/Moves/MovesLanding.jsx` + `Moves.styled.jsx`
+
+- Page title, gold decorative line, description paragraph
+- Real-time search
+- 8-column responsive table: Name | Type | Class | Power | Acc | PP | Gen | Effect
+- Grid breakpoints: Effect hidden < 950px, Gen hidden < 700px, Power/Acc/PP hidden < 500px
+- `TypeBadge` (color from `colorMap`) and `ClassBadge` (Physical = orange `#e65100`, Special = blue `#3b4cca`, Status = grey `#757575`)
+- Each row is a `Link` to `/moves/:name`, alternating backgrounds, gold left-border on hover
+
+### Detail Page (`/moves/:name`)
+
+**File:** `src/pages/Moves/MoveDetail.jsx`
+
+Sections in order:
+1. Back link ("← Back to Moves")
+2. Move name title + gold line
+3. Type badge + Class badge row
+4. Stat blocks row: Power, Accuracy (with `%`), PP, Generation
+5. **Effect** — full `effect_entries[en].effect`; `$effect_chance$` replaced with `move.effect_chance`
+6. **Game Descriptions** — English flavor text, deduplicated, version badge + text
+7. **Pokémon that learn this Move** — filtered to base forms (ID ≤ 1025), deduplicated, sorted alphabetically, each name **type-colored** (bold, type color default, gold on hover with glow), links to `/collection/:id`
+
+### Generation Format Convention
+
+Generation strings from the API (`"generation-ii"`, `"generation-viii"`) are formatted throughout moves and abilities pages as:
+
+```js
+const roman = name.split('-').pop().toUpperCase(); // "II", "VIII"
+`Generation ${roman}` // "Generation II", "Generation VIII"
+```
+
+Used in move detail stat block and ability detail generation badge. Do **not** use `capitalizeFirstLetter` on the Roman numeral segment — it produces "Ii", "Viii" etc.
+
+### Pokémon Type-Coloring in Move Detail
+
+`MoveDetail.jsx` batch-fetches primary types for the Pokémon list after the move loads:
+
+- Module-level `typeFetchCache = new Map()` — persists across navigations without React state
+- Seeds from cache immediately, then fetches unknown types in batches of 20 from `/api/v2/pokemon/:name` (lightweight endpoint, no species or evolution calls)
+- `cancelled` flag prevents stale state updates on unmount
+- `learnedByPokemon` computed via `useMemo([move])` — must be declared before early returns so the type-fetch `useEffect` can depend on it
+- `PokemonEntry` in `Moves.styled.jsx` accepts `typecolor` prop; default color = type color, hover = `#ffcc00` + `text-shadow` glow
+
+---
+
+## Nav Dropdown
+
+**Files:** `Nav.jsx`, `Nav.styled.jsx`
+
+The "Pokémon" nav link is a dropdown with three items:
+
+| Label | Route |
+|-------|-------|
+| Pokémon | `/collection` |
+| Abilities | `/abilities` |
+| Moves | `/moves` |
+
+**Hover gap fix:** Dropdown uses `top: 100%` (not `top: calc(100% + 5px)`) with `padding-top: 5px` on the dropdown itself. The padding is inside the `NavDropdownWrapper` hover zone, eliminating the dead zone that would close the menu.
+
+**State:** `const [pokemonOpen, setPokemonOpen] = useState(false)` — `onMouseEnter/Leave` on `NavDropdownWrapper`, `onClick` on `NavDropdownTrigger` for mobile toggle.
+
+`NavDropdownItem` is a styled `RouterLink`; clicking any item sets `setPokemonOpen(false)`.
+
+---
+
+## Routing (updated)
+
+| Path | Component |
+|------|-----------|
+| `/` | Home |
+| `/collection` | Browse/search all 1025 Pokémon |
+| `/collection/:id` | Pokémon detail |
+| `/pokemoncards` | Pokémon card catalog (shopping) |
+| `/cart` | Shopping cart |
+| `/abilities` | Abilities listing |
+| `/abilities/:name` | Ability detail |
+| `/moves` | Moves listing |
+| `/moves/:name` | Move detail |
+
+Provider nesting order in `App.jsx`:
+```
+CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider
+```

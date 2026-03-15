@@ -26,6 +26,7 @@ const initialPokeDetails = {
     species: {},
     types: [],
     moves: [],
+    abilities: [],
     isLinearChain: false,
     evolutionChainStages: [],
     evolutionTree: { evolvesFrom: null, nextEvolutions: [] },
@@ -171,6 +172,11 @@ sprites : [
           species: evolutionData,
           types: pokemonDetailData.types,
           moves: pokemonDetailData.moves,
+          abilities: (pokemonDetailData.abilities ?? []).map(a => ({
+            name: a.ability.name,
+            isHidden: a.is_hidden,
+            slot: a.slot,
+          })),
           evolutionTree: { evolvesFrom, nextEvolutions },
           ...(() => {
             const en = pokemonSpeciesData.flavor_text_entries?.filter(e => e.language.name === 'en') ?? [];

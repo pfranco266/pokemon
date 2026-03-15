@@ -4,6 +4,7 @@ import Evolution from "./Evolution";
 import About from "./About"
 import Stats from "./Stats";
 import Moves from "./Moves"
+import PokemonAbilities from "./PokemonAbilities"
 
 function MoreInfoBody ({memoPokemon}) {
 
@@ -13,6 +14,7 @@ function MoreInfoBody ({memoPokemon}) {
                 <About memoPokemon={memoPokemon}/>
                 <Stats memoPokemon={memoPokemon}/>
                 <Moves memoPokemon={memoPokemon}/>
+                <PokemonAbilities memoPokemon={memoPokemon}/>
                 <Evolution memoPokemon={memoPokemon}/>
             </FlexColumnContainer>
         </BodyContainer>

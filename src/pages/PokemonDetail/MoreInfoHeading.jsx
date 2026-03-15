@@ -5,7 +5,6 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 
 
 
-
 function MoreInfoHeading({ pokeId, memoPokemon }) {
 const [isMythical, setIsMythical] = useState(false);
 const [isLegendary, setIsLegendary] = useState(false);
@@ -16,13 +15,14 @@ useEffect(() => {
     } else {
         setIsMythical(false);
     }
-    
+
     if (memoPokemon.legendary) {
         setIsLegendary(true);
     } else {
         setIsLegendary(false);
     }
 }, [memoPokemon.legendary, memoPokemon.mythical]);
+
 return (
     <Heading type={memoPokemon?.types[0]?.type?.name}>
         <HeadingContainer>
@@ -42,10 +42,13 @@ return (
             <LandingSVG
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${memoPokemon.id}.svg`}
                 alt={memoPokemon.name}
+                onError={(e) => {
+                    e.currentTarget.onError = null;
+                    e.currentTarget.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${memoPokemon.id}.png`;
+                }}
             />
         </HeadingContainer>
     </Heading>
 );
 }
 export default MoreInfoHeading;
-
