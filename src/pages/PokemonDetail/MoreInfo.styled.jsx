@@ -20,23 +20,13 @@ display: none;
 
 
 export const Heading = styled.header`
-  height: 50vh;
+  height: clamp(150px, 20vw, 350px);
   width: 100%;
   position: relative;
 
   border-bottom-left-radius: 40px;
   border-bottom-right-radius: 40px;
   background-color: ${({ type }) => colorMap[type]?.color};
-
-  @media (max-width: 1068px) {
-    height: 40vh;
-  }
-  @media (max-width: 768px) {
-    height: 35vh;
-  }
-  @media (max-width: 512px) {
-    height: 30vh;
-  }
 `;
 
 export const HeadingContainer = styled.div`
@@ -73,18 +63,9 @@ export const HeaderTitleContainer = styled.div`
 
 export const PokemonTitle = styled.h1`
   text-transform: capitalize;
-  font-size: 5em;
-
-  @media (max-width: 1068px) {
-    font-size: 3em;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 2.5em;
-  }
+  font-size: clamp(1.5rem, 3vw, 3rem);
 
   @media (max-width: 600px) {
-    font-size: 2em;
     padding-left: 15px;
   }
 
@@ -94,20 +75,11 @@ export const PokemonTitle = styled.h1`
 `;
 
 export const PokeNumber = styled.span`
-  font-size: 3em;
+  font-size: clamp(1rem, 2vw, 2rem);
   opacity: 0.7;
   font-weight: bold;
 
-  @media (max-width: 1068px) {
-    font-size: 2.5em;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 2em;
-  }
-
   @media (max-width: 600px) {
-    font-size: 1.8em;
     padding-left: 15px;
   }
 
@@ -128,31 +100,10 @@ export const LandingSVG = styled.img`
   transform: scaleX(-1);
   padding: 2em 0;
   align-self: flex-end;
-
-  @media (min-width: 1500px) {
-    height: 18em;
-    width: 18em;
-  }
-
-  @media (max-width: 1068px) {
-    height: 14em;
-    width: 14em;
-  }
-
-  @media (max-width: 950px) {
-    height: 14em;
-    width: 14em;
-  }
-
-  @media (max-width: 768px) {
-    /* For devices less than 768px */
-    height: 10em;
-    width: 10em;
-  }
+  width: clamp(120px, 15vw, 280px);
+  height: clamp(120px, 15vw, 280px);
 
   @media (max-width: 400px) {
-    height: 8em;
-    width: 8em;
     align-self: center;
     padding: 0;
   }
@@ -691,13 +642,16 @@ export const PrevPokeButton = styled.button`
   justify-content: center;
   transition: background-color 0.2s;
   &:hover { background-color: rgba(0, 0, 0, 0.92); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
   @media(max-width: 768px) { width: 2.2em; height: 2.2em; font-size: 1.1em; left: 0.4em; }
+  @media(max-width: 700px) { display: none; }
 `;
 
 export const NextPokeButton = styled(PrevPokeButton)`
   left: unset;
   right: 0.75em;
   @media(max-width: 768px) { right: 0.4em; left: unset; }
+  @media(max-width: 700px) { display: none; }
 `;
 
 export const AbilitiesGridContainer = styled.div`

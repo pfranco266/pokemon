@@ -1,26 +1,33 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
 import { usePokemonCache } from "../../context/PokemonCacheContext";
+import { capitalizeFirstLetter } from "../../utils/stringUtils";
+import colorMap from "../../utils/colorMap";
 import MoreInfoHeading from "./MoreInfoHeading";
 import MoreInfoBody from "./MoreInfoBody";
+import PokeballTransition from "../../components/PokeballTransition/PokeballTransition";
 import { HomeContainer } from "../Home/Home.styled";
-import { PrevPokeButton, NextPokeButton } from "./MoreInfo.styled";
+import {
+    PrevPokeButton,
+    NextPokeButton,
+} from "./MoreInfo.styled";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import colorMap from "../../utils/colorMap";
 
 function MoreInfoLanding() {
     const params = useParams();
     const pokeId = params?.id;
     const navigate = useNavigate();
-    const { fetchPokemonDetail, listState } = usePokemonCache();
+    const { fetchPokemonDetail, fetchAllListPages, listState } = usePokemonCache();
     const totalCount = listState.totalCount;
 
     const [pokemonDetails, setPokemonDetails] = useReducer(pokemonReducer, initialPokeDetails);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [transitionTarget, setTransitionTarget] = useState({ id: null, name: '', direction: null });
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [pokeId]);
+        fetchAllListPages();
+    }, []);
 
     useEffect(() => {
         setPokemonDetails({ type: 'setLoading' });
@@ -60,12 +67,49 @@ function MoreInfoLanding() {
     const primaryType = pokemonDetails.types?.[0]?.type?.name;
     const typeColor = colorMap[primaryType]?.color ?? '#ffcc00';
 
+    function getNameForId(id) {
+        return listState.list[id - 1]?.name ?? '';
+    }
+
+    function handlePrev() {
+        if (isTransitioning || pokemonId <= 1) return;
+        const targetId = pokemonId - 1;
+        setTransitionTarget({ id: targetId, name: getNameForId(targetId), direction: 'left' });
+        setIsTransitioning(true);
+    }
+
+    function handleNext() {
+        if (isTransitioning || (totalCount && pokemonId >= totalCount)) return;
+        const targetId = pokemonId + 1;
+setTransitionTarget({ id: targetId, name: getNameForId(targetId), direction: 'right' });
+        setIsTransitioning(true);
+    }
+
+    function handleTransitionNavigate() {
+        navigate(`/collection/${transitionTarget.id}`);
+    }
+
+    function handleTransitionComplete() {
+        setIsTransitioning(false);
+        setTransitionTarget({ id: null, name: '', direction: null });
+    }
+
     return (
         <>
+            {isTransitioning && (
+                <PokeballTransition
+                    targetName={capitalizeFirstLetter(transitionTarget.name)}
+                    direction={transitionTarget.direction}
+                    onNavigate={handleTransitionNavigate}
+                    onComplete={handleTransitionComplete}
+                />
+            )}
+
             {pokemonId > 1 && (
                 <PrevPokeButton
                     typecolor={typeColor}
-                    onClick={() => navigate(`/collection/${pokemonId - 1}`)}
+                    onClick={handlePrev}
+                    disabled={isTransitioning}
                     aria-label="Previous Pokémon"
                 >
                     <IoMdArrowRoundBack />
@@ -74,12 +118,14 @@ function MoreInfoLanding() {
             {pokemonId && (!totalCount || pokemonId < totalCount) && (
                 <NextPokeButton
                     typecolor={typeColor}
-                    onClick={() => navigate(`/collection/${pokemonId + 1}`)}
+                    onClick={handleNext}
+                    disabled={isTransitioning}
                     aria-label="Next Pokémon"
                 >
                     <IoMdArrowRoundBack style={{ transform: 'rotateY(180deg)' }} />
                 </NextPokeButton>
             )}
+
             <MoreInfoHeading memoPokemon={pokemonDetails} />
             <MoreInfoBody memoPokemon={pokemonDetails} />
         </>

@@ -5,7 +5,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 
 
 
-function MoreInfoHeading({ pokeId, memoPokemon }) {
+function MoreInfoHeading({ memoPokemon }) {
 const [isMythical, setIsMythical] = useState(false);
 const [isLegendary, setIsLegendary] = useState(false);
 
