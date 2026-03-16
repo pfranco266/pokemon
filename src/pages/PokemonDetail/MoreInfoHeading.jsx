@@ -5,7 +5,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 
 
 
-function MoreInfoHeading({ memoPokemon }) {
+function MoreInfoHeading({ memoPokemon, headerRef }) {
 const [isMythical, setIsMythical] = useState(false);
 const [isLegendary, setIsLegendary] = useState(false);
 
@@ -24,7 +24,7 @@ useEffect(() => {
 }, [memoPokemon.legendary, memoPokemon.mythical]);
 
 return (
-    <Heading type={memoPokemon?.types[0]?.type?.name}>
+    <Heading ref={headerRef} type={memoPokemon?.types[0]?.type?.name}>
         <HeadingContainer>
             <BackButton to="/pokemon">
                 <IoMdArrowRoundBack />

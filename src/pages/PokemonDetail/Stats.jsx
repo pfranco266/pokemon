@@ -27,7 +27,7 @@ function getCaptureLabel(rate) {
 }
 
 // ── Radar chart ──────────────────────────────────────────────────────────────
-const CX = 150, CY = 150, R = 85, LABEL_R = 112, NUM_R = 132;
+const CX = 150, CY = 150, R = 85, LABEL_R = 112, NUM_R = 137;
 
 const STAT_AXES = [
     { label: 'HP',             name: 'HP',              key: 'hp',             Icon: HealthIcon        },
