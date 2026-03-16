@@ -15,7 +15,7 @@ No tests are configured.
 
 ## Branch state
 
-Active development is on `battle-feature`. The `main` branch is untouched. Do not push to `main`.
+Active development is on `battle-feature`. Push features to `battle-feature`, then merge to `main` for production. Netlify deploys from `main` automatically (`phillymon.netlify.app`).
 
 Battle feature is planned for implementation:
 - Select two Pokémon and simulate a winner
@@ -687,3 +687,72 @@ Real-time autocomplete dropdown replacing the old submit-button search.
 - `ResultNumber` — muted `#XXX` format, `String(id).padStart(3, '0')`
 
 **`SearchButton` export retained** — `Pokemon.styled.jsx` extends it as `AddtoCartButton`. Do not remove.
+
+---
+
+## Pokéball Transition Animation
+
+**Files:** `src/components/PokeballTransition/PokeballTransition.jsx` + `PokeballTransition.styled.jsx`
+
+Directional toast-style card that animates when the user clicks next/previous on a Pokémon detail page. No full-screen overlay, no white flash, no scroll position change.
+
+**Direction:** clicking → (next) slides from the right; clicking ← (prev) slides from the left.
+
+**Three phases (total 1.2s):**
+
+| Phase | Duration | What happens |
+|-------|----------|--------------|
+| 1 — Slide in | 0–300ms | Card enters from edge with `ease-out` |
+| 2 — Hold | 300–900ms | Card stays visible; `navigate()` fires at 300ms |
+| 3 — Slide out | 900–1200ms | Card exits to same edge with `ease-in`; `onComplete` fires at 1200ms |
+
+**Card contents (top to bottom):**
+- Spinning Pokéball SVG (70×70px, `rotate` keyframe, `0.6s linear infinite`)
+- `"I choose you!"` — white, italic, 0.9rem
+- Incoming Pokémon name — gold `#ffcc00`, Russo One, `clamp(1.5rem, 2.5vw, 2.2rem)`, falls back to `"..."` if list not yet loaded
+
+**Card styling:** `rgba(10,10,10,0.92)` bg, `2px solid #ffcc00` border, `border-radius: 16px`, `padding: 1.5rem 2rem`, `pointer-events: none`, `z-index: 9999`. Positioned `fixed`, `top: 50%`, offset `2rem` from the entry edge.
+
+**Styled component pattern:** Four separate components (`ToastSlideInRight`, `ToastSlideOutRight`, `ToastSlideInLeft`, `ToastSlideOutLeft`) extend a shared `ToastCardBase`. Switching from SlideIn to SlideOut on phase 3 remounts the component, which reliably restarts the CSS animation — same pattern as `WhiteFlashIn`/`WhiteFlashOut` from the previous approach.
+
+**Integration in `MoreInfoLanding.jsx`:**
+- `isTransitioning` + `transitionTarget: { id, name, direction }` state
+- `handlePrev`/`handleNext` set the target and `setIsTransitioning(true)` instead of navigating directly
+- `handleTransitionNavigate` calls `navigate()` only — no `window.scrollTo`
+- `handleTransitionComplete` resets state and removes the component from DOM
+- `PrevPokeButton`/`NextPokeButton` disabled during transition: `opacity: 0.5; cursor: not-allowed`
+
+---
+
+## Detail Page — Responsive Header
+
+**File:** `src/pages/PokemonDetail/MoreInfo.styled.jsx`
+
+The header banner (`Heading`) and its contents use `clamp()` values so they scale proportionally with viewport width rather than height — fixes the header being too tall on large portrait monitors where `vh`-based sizing was previously used.
+
+| Element | Value |
+|---------|-------|
+| `Heading` height | `clamp(150px, 20vw, 350px)` |
+| `LandingSVG` width/height | `clamp(120px, 15vw, 280px)` |
+| `PokemonTitle` font-size | `clamp(1.5rem, 3vw, 3rem)` |
+| `PokeNumber` font-size | `clamp(1rem, 2vw, 2rem)` |
+
+---
+
+## Detail Page — Name Lookup for Navigation
+
+**File:** `src/pages/PokemonDetail/MoreInfoLanding.jsx`
+
+`MoreInfoLanding` calls `fetchAllListPages()` on mount (guarded by `fullyLoaded` no-op inside the function). This ensures `listState.list` is always populated on the detail page, even when the user navigates directly to `/collection/:id` without first visiting `/collection`.
+
+**Why this matters:** `fetchPokemonDetail()` only writes to the `detailCache` Map — it does not touch `listState.list`. Without the `fetchAllListPages()` call, `getNameForId(targetId)` returns `''` and the Pokéball transition toast shows `"..."` instead of the incoming Pokémon's name.
+
+If the user arrived via `/collection`, `fetchAllListPages()` is already complete and the call returns immediately.
+
+---
+
+## Netlify Deployment
+
+**SPA routing fix:** `public/_redirects` contains `/*    /index.html    200` so all client-side routes (e.g. `/collection/25`, `/moves/tackle`) work when typed directly or shared as links — without it Netlify returns 404 on any non-root URL.
+
+**Production branch:** Netlify is configured to deploy from `main`. Push to `battle-feature` for development, merge to `main` to publish to `phillymon.netlify.app`.
