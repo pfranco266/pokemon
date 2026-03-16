@@ -698,13 +698,13 @@ Directional toast-style card that animates when the user clicks next/previous on
 
 **Direction:** clicking → (next) slides from the right; clicking ← (prev) slides from the left.
 
-**Three phases (total 1.2s):**
+**Three phases (total ~3s):**
 
 | Phase | Duration | What happens |
 |-------|----------|--------------|
 | 1 — Slide in | 0–300ms | Card enters from edge with `ease-out` |
-| 2 — Hold | 300–900ms | Card stays visible; `navigate()` fires at 300ms |
-| 3 — Slide out | 900–1200ms | Card exits to same edge with `ease-in`; `onComplete` fires at 1200ms |
+| 2 — Hold | 300–2700ms | Card stays visible; `navigate()` fires at 300ms |
+| 3 — Slide out | 2700–3000ms | Card exits to same edge with `ease-in`; `onComplete` fires at 3000ms |
 
 **Card contents (top to bottom):**
 - Spinning Pokéball SVG (70×70px, `rotate` keyframe, `0.6s linear infinite`)
@@ -756,3 +756,35 @@ If the user arrived via `/collection`, `fetchAllListPages()` is already complete
 **SPA routing fix:** `public/_redirects` contains `/*    /index.html    200` so all client-side routes (e.g. `/collection/25`, `/moves/tackle`) work when typed directly or shared as links — without it Netlify returns 404 on any non-root URL.
 
 **Production branch:** Netlify is configured to deploy from `main`. Push to `battle-feature` for development, merge to `main` to publish to `phillymon.netlify.app`.
+
+---
+
+## Detail Page — Compact Sticky Header
+
+**Files:** `src/pages/PokemonDetail/MoreInfoLanding.jsx`, `MoreInfoHeading.jsx`, `MoreInfo.styled.jsx`
+
+When the user scrolls past the full header banner on `/collection/:id`, a slim fixed banner slides down and stays pinned at the top of the viewport.
+
+**Behavior:**
+- Full header remains in normal document flow — it scrolls away naturally, no changes to its size or layout
+- Compact banner appears via `IntersectionObserver` on the `<Heading>` element (`threshold: 0`)
+- When heading exits viewport → `headerVisible = false` → banner slides in; when heading re-enters → banner slides out
+- `headerVisible` resets to `true` on every `pokeId` change to prevent flicker on navigation
+- Observer re-attaches in `useEffect([pokemonDetails.id])` so it targets the mounted element after data loads
+
+**Compact banner contents:**
+- Type-colored background matching the full header (`colorMap[primaryType]?.color`)
+- Pokémon number and name only — sprite hidden entirely
+- Font sizes match full header: `clamp(1rem, 2vw, 2rem)` for number, `clamp(1.5rem, 3vw, 3rem)` for name
+
+**Styled components (`MoreInfo.styled.jsx`):**
+- `CompactBanner`: `position: fixed; top: 0; z-index: 500`; `transform: translateY` toggled by `visible` prop (numeric 0/1); `transition: transform 0.2s ease` — always in DOM, CSS transition handles show/hide
+- `CompactBannerNumber`, `CompactBannerName`: match full-header font sizes without the layout-specific padding-left from `PokeNumber`/`PokemonTitle`
+
+---
+
+## Radar Chart — Axis Spacing
+
+**File:** `src/pages/PokemonDetail/Stats.jsx`
+
+`NUM_R` (the radial distance at which stat numbers are positioned) increased from `132` to `137` to add ~5 SVG units of clearance between the bottom of each axis icon and its corresponding stat number. Icons remain at `LABEL_R = 112`. Prevents icons and numbers touching on smaller container sizes where 22px fixed icons take up a proportionally larger area.

@@ -654,6 +654,39 @@ export const NextPokeButton = styled(PrevPokeButton)`
   @media(max-width: 700px) { display: none; }
 `;
 
+// ── Compact sticky banner (MoreInfoLanding.jsx) ───────────────────────────────
+
+export const CompactBanner = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 500;
+  background-color: ${({ type }) => colorMap[type]?.color ?? '#444'};
+  padding: 0.4rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  transform: translateY(${({ visible }) => visible ? '0' : '-100%'});
+  transition: transform 0.2s ease;
+`;
+
+export const CompactBannerNumber = styled.span`
+  font-size: clamp(1rem, 2vw, 2rem);
+  opacity: 0.7;
+  font-weight: bold;
+  white-space: nowrap;
+`;
+
+export const CompactBannerName = styled.h1`
+  font-size: clamp(1.5rem, 3vw, 3rem);
+  text-transform: capitalize;
+  white-space: nowrap;
+  font-weight: bold;
+  margin: 0;
+`;
+
 export const AbilitiesGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);

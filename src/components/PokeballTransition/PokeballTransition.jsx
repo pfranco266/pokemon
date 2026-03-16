@@ -35,11 +35,11 @@ function PokeballTransition({ targetName, direction, onNavigate, onComplete }) {
 
         const t2 = setTimeout(() => {
             setPhase(3);
-        }, 900);
+        }, 2700);
 
         const t3 = setTimeout(() => {
             onComplete();
-        }, 1200);
+        }, 3000);
 
         return () => {
             clearTimeout(t1);

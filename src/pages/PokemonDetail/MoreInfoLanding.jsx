@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { pokemonReducer, initialPokeDetails } from "../../reducers/pokemonReducer";
 import { usePokemonCache } from "../../context/PokemonCacheContext";
@@ -11,6 +11,9 @@ import { HomeContainer } from "../Home/Home.styled";
 import {
     PrevPokeButton,
     NextPokeButton,
+    CompactBanner,
+    CompactBannerNumber,
+    CompactBannerName,
 } from "./MoreInfo.styled";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
@@ -24,10 +27,29 @@ function MoreInfoLanding() {
     const [pokemonDetails, setPokemonDetails] = useReducer(pokemonReducer, initialPokeDetails);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [transitionTarget, setTransitionTarget] = useState({ id: null, name: '', direction: null });
+    const headerRef = useRef(null);
+    const [headerVisible, setHeaderVisible] = useState(true);
 
     useEffect(() => {
         fetchAllListPages();
     }, []);
+
+    // Reset banner when navigating to a new Pokémon
+    useEffect(() => {
+        setHeaderVisible(true);
+    }, [pokeId]);
+
+    // Attach IntersectionObserver after data loads (header element exists)
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => setHeaderVisible(entry.isIntersecting),
+            { threshold: 0 }
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, [pokemonDetails.id]);
 
     useEffect(() => {
         setPokemonDetails({ type: 'setLoading' });
@@ -126,7 +148,12 @@ setTransitionTarget({ id: targetId, name: getNameForId(targetId), direction: 'ri
                 </NextPokeButton>
             )}
 
-            <MoreInfoHeading memoPokemon={pokemonDetails} />
+            <CompactBanner type={primaryType} visible={!headerVisible ? 1 : 0}>
+                <CompactBannerNumber>#{pokemonId}</CompactBannerNumber>
+                <CompactBannerName>{capitalizeFirstLetter(pokemonDetails.name)}</CompactBannerName>
+            </CompactBanner>
+
+            <MoreInfoHeading memoPokemon={pokemonDetails} headerRef={headerRef} />
             <MoreInfoBody memoPokemon={pokemonDetails} />
         </>
     );
