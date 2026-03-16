@@ -45,16 +45,24 @@ export const NoDescription = styled.span`
     font-style: italic;
 `;
 
-// ── Search ────────────────────────────────────────────────────────────────────
+// ── Search / Filter controls ──────────────────────────────────────────────────
 
-export const MoveSearchContainer = styled.div`
+export const FilterControlsRow = styled.div`
     width: 100%;
     max-width: 900px;
     padding: 0.5em 1.5em 1.5em;
+    display: flex;
+    gap: 0.75em;
+    align-items: center;
+
+    @media(max-width: 700px) {
+        flex-direction: column;
+    }
 `;
 
 export const MoveSearchInput = styled.input`
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     padding: 0.6em 1em;
     border: 4px solid ${colors.formBorder};
     border-radius: 5px;
@@ -72,6 +80,49 @@ export const MoveSearchInput = styled.input`
     &:focus {
         border-color: #007bff;
     }
+
+    @media(max-width: 700px) {
+        width: 100%;
+    }
+`;
+
+export const FilterSelect = styled.select`
+    width: 180px;
+    flex-shrink: 0;
+    padding: 0.6em 2.2em 0.6em 0.75em;
+    border: 4px solid ${colors.formBorder};
+    border-radius: 5px;
+    background: #1a1a2e;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffcc00' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65em center;
+    cursor: pointer;
+
+    &:focus {
+        border-color: #007bff;
+    }
+
+    option {
+        background: #1a1a2e;
+        color: #ffffff;
+    }
+
+    @media(max-width: 700px) {
+        width: 100%;
+    }
+`;
+
+export const NoMovesText = styled.p`
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 1rem;
+    margin: 2em 0;
+    text-align: center;
 `;
 
 // ── Type / Class badges (shared listing + detail) ─────────────────────────────
@@ -110,10 +161,10 @@ export const ClassBadge = styled.span`
 
 // ── Table ─────────────────────────────────────────────────────────────────────
 
-const GRID_FULL   = '180px 70px 82px 52px 62px 42px 100px 1fr';
-const GRID_950    = '180px 70px 82px 52px 62px 42px 100px';
-const GRID_700    = '1fr 70px 82px 52px 62px 42px';
-const GRID_500    = '1fr 70px 80px';
+// Columns: Name | Type | Power | Gen | Effect
+const GRID_FULL   = '200px 80px 80px 110px 1fr';
+const GRID_700    = '200px 80px 80px 110px';
+const GRID_500    = '1fr 80px 80px';
 
 export const MoveTable = styled.div`
     width: 100%;
@@ -125,10 +176,9 @@ const sharedRowGrid = `
     display: grid;
     grid-template-columns: ${GRID_FULL};
     align-items: center;
-    gap: 0 0.5em;
+    gap: 0 1rem;
     padding: 0.55em 1em;
 
-    @media(max-width: 950px) { grid-template-columns: ${GRID_950}; }
     @media(max-width: 700px) { grid-template-columns: ${GRID_700}; }
     @media(max-width: 500px) { grid-template-columns: ${GRID_500}; }
 `;
@@ -159,9 +209,16 @@ export const MoveRow = styled(RouterLink)`
 export const ColHeader = styled.span`
     font-family: 'Russo One', sans-serif;
     font-size: 0.7rem;
-    color: rgba(255, 204, 0, 0.7);
+    color: ${({ active }) => active ? '#ffcc00' : 'rgba(255, 204, 0, 0.7)'};
     text-transform: uppercase;
     letter-spacing: 0.06em;
+    cursor: ${({ sortable }) => sortable ? 'pointer' : 'default'};
+    user-select: none;
+    transition: color 0.15s;
+
+    &:hover {
+        color: ${({ sortable, active }) => (sortable || active) ? '#ffcc00' : 'rgba(255, 204, 0, 0.7)'};
+    }
 `;
 
 export const MoveNameCell = styled.span`
@@ -173,40 +230,37 @@ export const MoveNameCell = styled.span`
     text-overflow: ellipsis;
 `;
 
-export const MoveTypeCell = styled.span``;
+export const MoveTypeCell = styled.span`
+    text-align: center;
+`;
 
 export const MoveClassCell = styled.span``;
 
 export const MovePowerCell = styled.span`
     font-size: 0.88rem;
     color: rgba(255, 255, 255, 0.87);
-    text-align: right;
-
-    @media(max-width: 500px) { display: none; }
+    text-align: center;
 `;
 
 export const MoveAccCell = styled.span`
     font-size: 0.88rem;
     color: rgba(255, 255, 255, 0.87);
     text-align: right;
-
-    @media(max-width: 500px) { display: none; }
 `;
 
 export const MovePPCell = styled.span`
     font-size: 0.88rem;
     color: rgba(255, 255, 255, 0.87);
     text-align: right;
-
-    @media(max-width: 500px) { display: none; }
 `;
 
 export const MoveGenCell = styled.span`
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.5);
     text-transform: capitalize;
+    text-align: center;
 
-    @media(max-width: 700px) { display: none; }
+    @media(max-width: 500px) { display: none; }
 `;
 
 export const MoveEffectCell = styled.span`
@@ -217,27 +271,25 @@ export const MoveEffectCell = styled.span`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 
-    @media(max-width: 950px) { display: none; }
+    @media(max-width: 700px) { display: none; }
 `;
 
 // Col header visibility mirrors data cells
 export const ColHeaderPower = styled(ColHeader)`
-    text-align: right;
-    @media(max-width: 500px) { display: none; }
+    text-align: center;
 `;
 export const ColHeaderAcc = styled(ColHeader)`
     text-align: right;
-    @media(max-width: 500px) { display: none; }
 `;
 export const ColHeaderPP = styled(ColHeader)`
     text-align: right;
-    @media(max-width: 500px) { display: none; }
 `;
 export const ColHeaderGen = styled(ColHeader)`
-    @media(max-width: 700px) { display: none; }
+    text-align: center;
+    @media(max-width: 500px) { display: none; }
 `;
 export const ColHeaderEffect = styled(ColHeader)`
-    @media(max-width: 950px) { display: none; }
+    @media(max-width: 700px) { display: none; }
 `;
 
 // ── Detail page ───────────────────────────────────────────────────────────────

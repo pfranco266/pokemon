@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link, NavContainer, NavBar, NavDropdownWrapper, NavDropdownTrigger, NavDropdown, NavDropdownItem } from "./Nav.styled";
 import CartContext from "../../context/CartContext";
 import Cart from "./CartIcon";
@@ -6,6 +7,12 @@ import Cart from "./CartIcon";
 function Nav() {
     const { totalAmount } = useContext(CartContext);
     const [pokemonOpen, setPokemonOpen] = useState(false);
+    const navigate = useNavigate();
+
+    function handleDropdownNav(path) {
+        setPokemonOpen(false);
+        navigate(path);
+    }
 
     return (
         <NavContainer>
@@ -24,13 +31,13 @@ function Nav() {
                         Pokémon ▾
                     </NavDropdownTrigger>
                     <NavDropdown isopen={pokemonOpen ? 1 : 0}>
-                        <NavDropdownItem to="/collection" onClick={() => setPokemonOpen(false)}>
+                        <NavDropdownItem to="/collection" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/collection'); }}>
                             Pokémon
                         </NavDropdownItem>
-                        <NavDropdownItem to="/abilities" onClick={() => setPokemonOpen(false)}>
+                        <NavDropdownItem to="/abilities" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/abilities'); }}>
                             Abilities
                         </NavDropdownItem>
-                        <NavDropdownItem to="/moves" onClick={() => setPokemonOpen(false)}>
+                        <NavDropdownItem to="/moves" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/moves'); }}>
                             Moves
                         </NavDropdownItem>
                     </NavDropdown>

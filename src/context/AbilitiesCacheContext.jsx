@@ -45,6 +45,7 @@ export function AbilitiesCacheProvider({ children }) {
 
                     results.push({
                         name: d.name,
+                        generation: d.generation?.name ?? null,
                         shortEffect,
                     });
                 });

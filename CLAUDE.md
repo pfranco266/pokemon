@@ -463,12 +463,34 @@ const { abilities, loading, fullyLoaded, fetchAbilities, fetchAbilityDetail } = 
 - **`fetchAbilities()`** — fetches all ~400 abilities from `/ability?limit=400`, batch-fetches full detail in groups of 20, stores `{ name, shortEffect }` in state; falls back to `flavor_text_entries` if `effect_entries` is empty; incremental display as batches complete
 - **`fetchAbilityDetail(name)`** — fetches `/ability/:name`, caches full raw response in `detailCacheRef` (separate `Map` from listing data); returns from cache on repeat calls
 
+### Context data stored per ability
+
+```js
+{ name, generation, shortEffect }
+```
+
+`generation` is `d.generation?.name ?? null` (e.g. `"generation-iii"`). Abilities have **no type field** in PokeAPI — do not add a type filter.
+
 ### Listing Page (`/abilities`)
 
-- Page title, gold decorative line, clarification description paragraph below the line
-- Real-time search filtering against ability name (spaces → hyphens before comparing)
+- Page title, gold decorative line, styled quote block description (see Page Description Styling)
+- Two filter controls in a flex row: search bar (`flex: 1`), generation dropdown — stack vertically below 700px
+- 3-column table: **Ability | Generation | Effect** — grid `220px 140px 1fr` (~25% / ~15% / ~60%)
+- Generation display: **"GEN I"**, **"GEN IV"** etc. (same abbreviation as /moves listing)
+- Generation column hidden ≤500px; at ≤500px grid collapses to `220px 1fr`
 - Alternating row backgrounds, gold left-border on hover, each row links to `/abilities/:name`
 - `NoDescription` fallback for abilities with no effect text
+- "No abilities found." shown when filters produce zero results
+
+**Sortable columns** — `sortKey` / `sortDir` state, default `'name'` / `'asc'`:
+
+| Column | Sort behavior |
+|--------|--------------|
+| Ability | A-Z / Z-A |
+| Generation | oldest→newest / newest→oldest (alphabetical on raw API value) |
+
+- Same gold highlight / ▲▼ indicator / `transition: color 0.15s` pattern as /moves
+- `AbilityColHeader` and `AbilityColHeaderGen` in `Abilities.styled.jsx` accept `active` and `sortable` props (numeric)
 
 ### Detail Page (`/abilities/:name`)
 
@@ -507,12 +529,29 @@ const { moves, loading, fullyLoaded, fetchMoves, fetchMoveDetail } = useMovesCac
 
 **File:** `src/pages/Moves/MovesLanding.jsx` + `Moves.styled.jsx`
 
-- Page title, gold decorative line, description paragraph
-- Real-time search
-- 8-column responsive table: Name | Type | Class | Power | Acc | PP | Gen | Effect
-- Grid breakpoints: Effect hidden < 950px, Gen hidden < 700px, Power/Acc/PP hidden < 500px
-- `TypeBadge` (color from `colorMap`) and `ClassBadge` (Physical = orange `#e65100`, Special = blue `#3b4cca`, Status = grey `#757575`)
+- Page title, gold decorative line, styled quote block description (see Page Description Styling)
+- Three filter controls in a flex row: search bar (`flex: 1`), type dropdown, generation dropdown — stack vertically below 700px
+- 5-column responsive table: **Name | Type | Power | Gen | Effect** — Class, Accuracy, PP removed from listing (still on detail page)
+- Grid: `200px 80px 80px 110px 1fr`; Effect hidden ≤700px, Gen hidden ≤500px; `gap: 0 1rem`
+- Column alignment: Name left, Type center, Power center, Gen center, Effect left
+- `TypeBadge` (color from `colorMap`); Class/Acc/PP still shown on detail page
 - Each row is a `Link` to `/moves/:name`, alternating backgrounds, gold left-border on hover
+- Generation display: **"GEN I"**, **"GEN IV"** etc. — `'GEN ' + gen.split('-').pop().toUpperCase()` — listing only (detail pages still use "Generation II" format)
+- Filter dropdowns: type from `Object.keys(colorMap)`, generation derived dynamically via `useMemo` from loaded data; all three filters apply simultaneously; results always re-sorted after filtering
+- "No moves found." shown when filters produce zero results against loaded data
+
+**Sortable columns** — `sortKey` / `sortDir` state in `MovesLanding.jsx`:
+
+| Column | Sort behavior |
+|--------|--------------|
+| Name | A-Z / Z-A (default A-Z) |
+| Type | A-Z / Z-A by type name |
+| Power | low→high / high→low; nulls always sink to bottom |
+| Gen | oldest→newest / newest→oldest |
+
+- Active column header highlighted gold; inactive muted gold; `transition: color 0.15s`
+- ▲ / ▼ indicator rendered inline next to active header label
+- `ColHeader` styled component accepts `active` and `sortable` props (numeric 0/1, not boolean) for prop-to-DOM safety; `ColHeaderPower`, `ColHeaderGen`, `ColHeaderEffect` extend it
 
 ### Detail Page (`/moves/:name`)
 
@@ -529,14 +568,19 @@ Sections in order:
 
 ### Generation Format Convention
 
-Generation strings from the API (`"generation-ii"`, `"generation-viii"`) are formatted throughout moves and abilities pages as:
+Generation strings from the API (`"generation-ii"`, `"generation-viii"`) are formatted differently depending on context:
 
+**Detail pages** (`/moves/:name`, `/abilities/:name`) — full label:
 ```js
-const roman = name.split('-').pop().toUpperCase(); // "II", "VIII"
-`Generation ${roman}` // "Generation II", "Generation VIII"
+`Generation ${name.split('-').pop().toUpperCase()}` // "Generation II"
 ```
 
-Used in move detail stat block and ability detail generation badge. Do **not** use `capitalizeFirstLetter` on the Roman numeral segment — it produces "Ii", "Viii" etc.
+**Listing pages** (`/moves`, `/abilities`) — abbreviated label:
+```js
+`GEN ${name.split('-').pop().toUpperCase()}` // "GEN II", "GEN VIII"
+```
+
+Do **not** use `capitalizeFirstLetter` on the Roman numeral segment — it produces "Ii", "Viii" etc. The `.toUpperCase()` pattern is the only correct approach.
 
 ### Pokémon Type-Coloring in Move Detail
 
@@ -566,7 +610,13 @@ The "Pokémon" nav link is a dropdown with three items:
 
 **State:** `const [pokemonOpen, setPokemonOpen] = useState(false)` — `onMouseEnter/Leave` on `NavDropdownWrapper`, `onClick` on `NavDropdownTrigger` for mobile toggle.
 
-`NavDropdownItem` is a styled `RouterLink`; clicking any item sets `setPokemonOpen(false)`.
+**Click timing fix:** All three `NavDropdownItem`s use `onMouseDown` + `e.preventDefault()` + explicit `navigate(path)` instead of relying on the RouterLink click event. This bypasses a pointer-events timing race where `onMouseLeave` fires `setPokemonOpen(false)` → sets `pointer-events: none` on the dropdown → swallows the click before it registers.
+
+```jsx
+<NavDropdownItem to="/collection" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/collection'); }}>
+```
+
+`handleDropdownNav(path)` calls `setPokemonOpen(false)` then `navigate(path)`.
 
 ---
 
@@ -588,3 +638,52 @@ Provider nesting order in `App.jsx`:
 ```
 CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider
 ```
+
+---
+
+## Page Description Styling (Quote Block)
+
+**File:** `src/components/shared/PageQuoteBlock.styled.jsx`
+
+Used on both `/moves` and `/abilities` listing pages to replace the plain `PageDescription` paragraph.
+
+```jsx
+<PageQuoteBlock>
+    <QuoteFirstSentence>First sentence here.</QuoteFirstSentence>{' '}
+    Remaining text italic white...
+</PageQuoteBlock>
+```
+
+Styles:
+- `PageQuoteBlock`: `border-left: 3px solid #ffcc00`, `background: rgba(255,204,0,0.05)`, `padding: 1rem 1.25rem`, `border-radius: 0 8px 8px 0`, `max-width: 700px`, `margin: 0 auto 1.75rem`, `color: #ffffff`, `font-size: 1rem`, `line-height: 1.8`, `font-style: italic`
+- `QuoteFirstSentence`: `color: #ffcc00`, `font-weight: 700`, `font-style: normal` — draws the eye to the opening line
+
+The split at the first period is done manually in JSX (not automated). The `{' '}` between `</QuoteFirstSentence>` and the rest is required for the space before italic continuation text.
+
+---
+
+## `/collection` Search
+
+**File:** `src/pages/Collection/Search/Search.jsx` + `Search.styled.jsx`
+
+Real-time autocomplete dropdown replacing the old submit-button search.
+
+**Behavior:**
+- Reads from `usePokemonCache().listState.list` directly — no props needed from parent
+- 150ms debounce on keystroke via `useEffect` + `clearTimeout`
+- Results ranked: `startsWith` matches first, then `contains` matches; max 8 shown
+- Query normalisation: spaces → hyphens before comparing against API names
+- Enter key navigates to first result; Escape closes dropdown
+- Click outside closes dropdown (`mousedown` listener on `document` with `wrapperRef`)
+- Selecting a result: extracts numeric ID from `pokemon.url`, calls `navigate(\`/collection/${id}\`)`
+- `query` and `results` both cleared on navigation
+
+**Dropdown styling (`Search.styled.jsx`):**
+- `SearchWrapper`: `position: relative; width: 100%; max-width: 450px`
+- `SearchDropDown`: `#0a0a0a` bg, `1px solid #ffcc00` border, `max-height: 400px`, `overflow-y: auto`, `fadeIn` 0.15s animation, `z-index: 1000`
+- `SearchDropDownItem`: flex row, gold left-border on hover (`border-left: 3px solid #ffcc00`)
+- `ResultSprite` (32×32px) — dream-world SVG with `onError` fallback to official-artwork PNG
+- `ResultName` — gold, Russo One, capitalized
+- `ResultNumber` — muted `#XXX` format, `String(id).padStart(3, '0')`
+
+**`SearchButton` export retained** — `Pokemon.styled.jsx` extends it as `AddtoCartButton`. Do not remove.

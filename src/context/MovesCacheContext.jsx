@@ -52,7 +52,7 @@ export function MovesCacheProvider({ children }) {
                         detailCacheRef.current.set(d.name, d);
                     }
                 });
-                setMoves([...results]);
+                setMoves([...results].sort((a, b) => a.name.localeCompare(b.name)));
             }
 
             loadedRef.current = true;
