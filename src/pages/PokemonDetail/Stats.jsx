@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { FlexColumnContainer, TBSContainer, TBSLabel, TBSValue, TBSBarTrack, TBSBarFill, TBSTierLabel, AttackIcon, DefenseIcon, SpecialAttackIcon, SpecialDefenseIcon, HealthIcon, SpeedIcon, AccordionToggle, AccordionChevron, AccordionContent, BattleRoleContainer, StatsSideBySide, StatChartSection, StatLegendSection, StatLegendRow, StatLegendName } from "./MoreInfo.styled";
-import { Title } from "../Home/Home.styled";
+import { FlexColumnContainer, TBSContainer, TBSLabel, TBSValue, TBSBarTrack, TBSBarFill, TBSTierLabel, AttackIcon, DefenseIcon, SpecialAttackIcon, SpecialDefenseIcon, HealthIcon, SpeedIcon, AccordionToggle, AccordionChevron, AccordionContent, BattleRoleContainer, StatsSideBySide, StatChartSection, StatLegendSection, StatLegendRow, StatLegendName, MoreInfoSubtitle } from "./MoreInfo.styled";
 import colorMap from "../../utils/colorMap";
 
 const TBS_MAX = 800;
@@ -30,12 +29,12 @@ function getCaptureLabel(rate) {
 const CX = 150, CY = 150, R = 85, LABEL_R = 112, NUM_R = 137;
 
 const STAT_AXES = [
-    { label: 'HP',             name: 'HP',              key: 'hp',             Icon: HealthIcon        },
-    { label: 'Atk',            name: 'Attack',          key: 'attack',         Icon: AttackIcon        },
-    { label: 'Def',            name: 'Defense',         key: 'defense',        Icon: DefenseIcon       },
-    { label: 'Sp.Atk',         name: 'Special Attack',  key: 'specialAttack',  Icon: SpecialAttackIcon },
-    { label: 'Sp.Def',         name: 'Special Defense', key: 'specialDefense', Icon: SpecialDefenseIcon},
-    { label: 'Spd',            name: 'Speed',           key: 'speed',          Icon: SpeedIcon         },
+    { label: 'HP',             name: 'HP',              key: 'hp',             Icon: HealthIcon        }, // 0°   top
+    { label: 'Def',            name: 'Defense',         key: 'defense',        Icon: DefenseIcon       }, // 60°  top-right
+    { label: 'Sp.Def',         name: 'Special Defense', key: 'specialDefense', Icon: SpecialDefenseIcon}, // 120° bottom-right
+    { label: 'Spd',            name: 'Speed',           key: 'speed',          Icon: SpeedIcon         }, // 180° bottom
+    { label: 'Sp.Atk',         name: 'Special Attack',  key: 'specialAttack',  Icon: SpecialAttackIcon }, // 240° bottom-left
+    { label: 'Atk',            name: 'Attack',          key: 'attack',         Icon: AttackIcon        }, // 300° top-left
 ];
 
 function radarPoint(i, ratio, n, cx, cy, r) {
@@ -174,7 +173,7 @@ function Stats({ memoPokemon }) {
 
     return (
         <FlexColumnContainer>
-            <Title>{memoPokemon.name} Stats</Title>
+            <MoreInfoSubtitle>{memoPokemon.name} Stats</MoreInfoSubtitle>
 
             <TBSContainer>
                 <TBSLabel>Base Stat Total</TBSLabel>
