@@ -1199,3 +1199,36 @@ All battle UI styled components. Key exports:
 - `.env` listed in `.gitignore` (lines 14–15: `.env` and `.env.*`) — never git-tracked
 - Accessed only via `import.meta.env.VITE_ANTHROPIC_API_KEY` in `BattlePage.jsx` inside `fetchNarrative()`
 - Dev server must be restarted after editing `.env` (Vite reads env vars at startup only)
+
+---
+
+### Netlify Environment Variable
+
+`VITE_ANTHROPIC_API_KEY` must be added in the Netlify dashboard for the AI narrative to work on the live site:
+
+**Netlify dashboard → Site configuration → Environment variables → Add variable**
+
+Key: `VITE_ANTHROPIC_API_KEY` | Value: the API key
+
+The local `.env` file is never pushed to GitHub, so the live site has no key unless it is set here. Netlify injects `VITE_*` env vars at build time — after adding or changing the variable, trigger a redeploy.
+
+---
+
+### `fetchAllListPages` Infinite Loop Fix
+
+**Symptom:** `/pokemon-species/` endpoint called hundreds of thousands of times; 530,000+ console log entries on the `/battle` page.
+
+**Root cause:** `fetchAllListPages` was a plain `async` function defined inside `PokemonCacheProvider`. Every `listState` update (each page of Pokémon fetched) re-rendered the provider and created a **new function reference**. `BattlePage`'s `useEffect(..., [fetchAllListPages])` saw the new reference as a changed dependency and re-fired, calling `fetchAllListPages` again → which updated `listState` → new reference → infinite loop.
+
+**Fix — `PokemonCacheContext.jsx`:**
+- Added `useCallback` import
+- Added `listStateRef` (`useRef`) — assigned `listStateRef.current = listState` on every render so async functions always read current state without listing `listState` as a dep
+- Added `isFetchingAllRef` (`useRef(false)`) — guards against concurrent calls when multiple components mount simultaneously; reset in `finally`
+- Wrapped `fetchNextListPage` and `fetchAllListPages` in `useCallback(fn, [])` — stable reference across all renders
+
+**Fix — `BattlePage.jsx`:**
+- Changed `useEffect(() => { fetchAllListPages(); }, [fetchAllListPages])` to `useEffect(() => { fetchAllListPages(); }, [])` (run once on mount only)
+
+**Other pages** (`BrowsePokemon.jsx`, `MoreInfoLanding.jsx`) already used `[]` and were not affected.
+
+**Rule:** Never put `fetchAllListPages` or `fetchNextListPage` in a `useEffect` dependency array. Always use `[]`.
