@@ -947,3 +947,66 @@ The `isopen` prop on `NavDropdown` was forwarded to the underlying DOM `<div>`, 
 - `Nav.jsx`: prop passed as `$isopen={pokemonOpen ? 1 : 0}`
 
 Apply the same `$` prefix pattern to any other boolean/numeric styled-component props that are not valid HTML attributes (e.g. `typecolor`, `tiercolor`, `isopen`, `exceptional`), particularly when styled-components warns about them.
+
+---
+
+## Detail Page — Clickable Section Headings
+
+**Files:** `src/pages/PokemonDetail/Moves.jsx`, `PokemonAbilities.jsx`, `About.jsx`
+
+Three elements on `/collection/:id` are now navigable links:
+
+**"Moves" and "Abilities" headings:**
+- Both replaced with a local `TitleLink` (styled `RouterLink`) that visually matches all other section headings at base state
+- "Moves" → `/moves`; "Abilities" → `/abilities`
+- Hover: `text-shadow: 0 0 12px rgba(255,204,0,0.8)` gold glow, no underline, `cursor: pointer`
+- `transition: text-shadow 0.15s ease`
+
+**Type badges in About section:**
+- Each `TypeBadge` wrapped in a `TypeBadgeLink` (styled `RouterLink`) to `/types/:typeName` (lowercase type name)
+- `TypeBadge` styling unchanged — the wrapper provides the interaction
+- Hover: `transform: scale(1.05)` + `filter: brightness(1.3)`, `transition: 0.15s ease`
+- `key` prop moved to the outer `TypeBadgeLink`; `display: inline-block` on wrapper preserves flex layout in `TypeBadgesRow`
+
+---
+
+## Detail Page — Section Heading Consistency
+
+**Files:** `src/pages/PokemonDetail/MoreInfo.styled.jsx`, `Stats.jsx`, `Evolution.jsx`, `Moves.jsx`, `PokemonAbilities.jsx`
+
+All section headings on `/collection/:id` share a single consistent style:
+
+| Property | Value |
+|----------|-------|
+| `font-family` | `'Russo One', sans-serif` |
+| `font-size` | `1.8rem` |
+| `color` | `#ffffff` |
+| `text-align` | `center` |
+| `margin` | `0 0 1rem` |
+| `text-transform` | `capitalize` |
+
+**Implementation:**
+- `MoreInfoSubtitle` in `MoreInfo.styled.jsx` updated to the canonical style — used directly by `About.jsx` for "About [Name]"
+- `Stats.jsx` and `Evolution.jsx` replaced their `Title` import from `Home.styled.jsx` with `MoreInfoSubtitle` from `MoreInfo.styled.jsx` — avoids changing `Title` globally (it is also used on the Home and PokemonCatalogue pages)
+- `TitleLink` in `Moves.jsx` and `PokemonAbilities.jsx` updated to match the same properties; link-specific additions (`text-decoration: none`, `cursor: pointer`, hover glow) are on top of the base style
+
+**Headings covered:** "About [Name]", "[Name] Stats", "Evolution Chain", "Evolves From", "Evolves Into", "Moves", "Abilities"
+
+---
+
+## Radar Chart — Axis Order
+
+**File:** `src/pages/PokemonDetail/Stats.jsx`
+
+`STAT_AXES` array reordered so the axes map to clock positions that group offense left / defense right:
+
+| Position | Clock | Stat |
+|----------|-------|------|
+| 0° | 12 o'clock (top) | HP |
+| 60° | 2 o'clock (top-right) | Defense |
+| 120° | 4 o'clock (bottom-right) | Special Defense |
+| 180° | 6 o'clock (bottom) | Speed |
+| 240° | 8 o'clock (bottom-left) | Special Attack |
+| 300° | 10 o'clock (top-left) | Attack |
+
+Attack and Special Attack sit on the left; Defense and Special Defense on the right; HP at top; Speed at bottom. Only the array order changed — all rendering math, icon/number positioning, polygon, and grid lines are untouched.

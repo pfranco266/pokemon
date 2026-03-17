@@ -89,11 +89,12 @@ export const PokeNumber = styled.span`
 `;
 
 export const MoreInfoSubtitle = styled.h1`
-text-align: center;
-font-size: 2em; 
-color: rgba(255, 255, 255, 0.87);
-text-transform: capitalize;
-  margin: 2em 0;
+    font-family: 'Russo One', sans-serif;
+    text-align: center;
+    font-size: 1.8rem;
+    color: #ffffff;
+    text-transform: capitalize;
+    margin: 0 0 1rem;
 `
 
 export const LandingSVG = styled.img`

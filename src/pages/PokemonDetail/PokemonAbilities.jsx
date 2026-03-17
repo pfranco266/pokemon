@@ -2,8 +2,24 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
-import { Title } from '../Home/Home.styled';
 import { FlexColumnContainer, AccordionToggle, AccordionChevron, AccordionContent } from './MoreInfo.styled';
+
+const TitleLink = styled(Link)`
+    display: block;
+    font-family: 'Russo One', sans-serif;
+    text-align: center;
+    font-size: 1.8rem;
+    color: #ffffff;
+    text-transform: capitalize;
+    text-decoration: none;
+    margin: 0 0 1rem;
+    cursor: pointer;
+    transition: text-shadow 0.15s ease;
+
+    &:hover {
+        text-shadow: 0 0 12px rgba(255, 204, 0, 0.8);
+    }
+`;
 
 const AbilityList = styled.div`
     display: flex;
@@ -70,7 +86,7 @@ function PokemonAbilities({ memoPokemon }) {
 
     return (
         <FlexColumnContainer>
-            <Title>Abilities</Title>
+            <TitleLink to="/abilities">Abilities</TitleLink>
             <AbilityList>
                 {standardAbilities.map(a => (
                     <AbilityItem key={a.name}>

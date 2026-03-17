@@ -1,6 +1,5 @@
 import React from "react";
-import { EvolutionGridContainer } from "./MoreInfo.styled";
-import { Title } from "../Home/Home.styled";
+import { EvolutionGridContainer, MoreInfoSubtitle } from "./MoreInfo.styled";
 import SinglePokeCard from "../Collection/SinglePokeCard";
 
 function Evolution({ memoPokemon }) {
@@ -13,7 +12,7 @@ function Evolution({ memoPokemon }) {
         if (!evolutionChainStages || evolutionChainStages.length <= 1) return null;
         return (
             <>
-                <Title>Evolution Chain</Title>
+                <MoreInfoSubtitle>Evolution Chain</MoreInfoSubtitle>
                 <EvolutionGridContainer count={evolutionChainStages.length}>
                     {evolutionChainStages.map((poke) => (
                         <SinglePokeCard key={poke.id} index={poke.id} />
@@ -28,7 +27,7 @@ function Evolution({ memoPokemon }) {
         <>
             {evolvesFrom && (
                 <>
-                    <Title>Evolves From</Title>
+                    <MoreInfoSubtitle>Evolves From</MoreInfoSubtitle>
                     <EvolutionGridContainer count={1}>
                         <SinglePokeCard key={evolvesFrom.id} index={evolvesFrom.id} />
                     </EvolutionGridContainer>
@@ -36,7 +35,7 @@ function Evolution({ memoPokemon }) {
             )}
             {nextEvolutions?.length > 0 && (
                 <>
-                    <Title>Evolves Into</Title>
+                    <MoreInfoSubtitle>Evolves Into</MoreInfoSubtitle>
                     <EvolutionGridContainer count={nextEvolutions.length}>
                         {nextEvolutions.map((poke) => (
                             <SinglePokeCard key={poke.id} index={poke.id} />

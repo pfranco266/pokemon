@@ -2,7 +2,23 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {FlexColumnContainer, AbilitiesGridContainer,StatsText, AbilitiesFlexContainer} from "./MoreInfo.styled"
-import { Title } from "../Home/Home.styled";
+
+const TitleLink = styled(Link)`
+    display: block;
+    font-family: 'Russo One', sans-serif;
+    text-align: center;
+    font-size: 1.8rem;
+    color: #ffffff;
+    text-transform: capitalize;
+    text-decoration: none;
+    margin: 0 0 1rem;
+    cursor: pointer;
+    transition: text-shadow 0.15s ease;
+
+    &:hover {
+        text-shadow: 0 0 12px rgba(255, 204, 0, 0.8);
+    }
+`;
 
 const MoveLink = styled(Link)`
     color: #ffcc00;
@@ -32,7 +48,7 @@ function Moves ({memoPokemon}) {
 
 return (
     <FlexColumnContainer>
-        <Title>Moves</Title>
+        <TitleLink to="/moves">Moves</TitleLink>
         <AbilitiesGridContainer>
             {learnedMoves && learnedMoves.map((move, index) => {
                 return (

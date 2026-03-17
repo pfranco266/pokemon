@@ -1,8 +1,22 @@
 import React, {useState} from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { capitalizeFirstLetter } from "../../utils/stringUtils";
 import { FlexColumnContainer, PrevButton, MoreInfoSubtitle, NextButton, AboutInfoContainer, AboutImgTitle, AboutImgContainer, AboutTextContainer, HabitatBanner, TypeBadgesRow, TypeBadge } from "./MoreInfo.styled";
 import { AboutSVG } from "./MoreInfo.styled";
 import colorMap from "../../utils/colorMap";
+
+const TypeBadgeLink = styled(Link)`
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+
+    &:hover {
+        transform: scale(1.05);
+        filter: brightness(1.3);
+    }
+`;
 
 
 
@@ -51,9 +65,11 @@ function About({ memoPokemon }) {
                     const typeName = t?.type?.name;
                     const typeColor = colorMap[typeName]?.color ?? null;
                     return (
-                        <TypeBadge key={typeName} typecolor={typeColor}>
-                            {capitalizeFirstLetter(typeName)}
-                        </TypeBadge>
+                        <TypeBadgeLink key={typeName} to={`/types/${typeName}`}>
+                            <TypeBadge typecolor={typeColor}>
+                                {capitalizeFirstLetter(typeName)}
+                            </TypeBadge>
+                        </TypeBadgeLink>
                     );
                 })}
             </TypeBadgesRow>
