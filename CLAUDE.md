@@ -633,10 +633,12 @@ The "Pokémon" nav link is a dropdown with three items:
 | `/abilities/:name` | Ability detail |
 | `/moves` | Moves listing |
 | `/moves/:name` | Move detail |
+| `/types` | Types listing |
+| `/types/:name` | Type detail |
 
 Provider nesting order in `App.jsx`:
 ```
-CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider
+CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider > TypesCacheProvider
 ```
 
 ---
@@ -645,7 +647,7 @@ CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvide
 
 **File:** `src/components/shared/PageQuoteBlock.styled.jsx`
 
-Used on both `/moves` and `/abilities` listing pages to replace the plain `PageDescription` paragraph.
+Used on `/moves`, `/abilities`, and `/types` listing pages to replace the plain `PageDescription` paragraph.
 
 ```jsx
 <PageQuoteBlock>
@@ -788,3 +790,129 @@ When the user scrolls past the full header banner on `/collection/:id`, a slim f
 **File:** `src/pages/PokemonDetail/Stats.jsx`
 
 `NUM_R` (the radial distance at which stat numbers are positioned) increased from `132` to `137` to add ~5 SVG units of clearance between the bottom of each axis icon and its corresponding stat number. Icons remain at `LABEL_R = 112`. Prevents icons and numbers touching on smaller container sizes where 22px fixed icons take up a proportionally larger area.
+
+---
+
+## Legendary / Mythical Header Banner
+
+**File:** `src/pages/PokemonDetail/MoreInfoHeading.jsx`, `MoreInfo.styled.jsx`
+
+`MythicalBanner` and `LegendaryBanner` use a left-to-right shimmer/reveal animation only — no sparkle particles. The shine keyframe animates `background-position` across a gradient using the Pokémon's primary type color. Sparkle particles were implemented and then reverted; the self-contained `SparkleBadge` component was preserved for future use but is not currently rendered anywhere in `MoreInfoHeading`.
+
+---
+
+## SparkleBadge Component
+
+**File:** `src/components/shared/SparkleBadge.jsx`
+
+Self-contained animated badge for future use on the Pokémon detail page. Not currently rendered anywhere.
+
+- Props: `label` (string to display), `active` (boolean — returns `null` when false)
+- 10 `✦` particles positioned absolutely around the label text, each with staggered `animationDelay` and `animationDuration`; particles float upward and fade out via `sparkleFloat` keyframe
+- Gold text with glow `text-shadow`; wrapper is `display: inline-block; position: relative`
+- Comment at top of file: `// Reserved for use in Pokemon detail info section`
+
+---
+
+## Types System
+
+### Routing
+
+Two new routes added to `App.jsx`:
+
+| Path | Component |
+|------|-----------|
+| `/types` | `TypesLanding` |
+| `/types/:name` | `TypeDetail` |
+
+Provider nesting order (updated):
+```
+CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider > TypesCacheProvider
+```
+
+Nav dropdown now has four items: Pokémon → `/collection`, Abilities → `/abilities`, Moves → `/moves`, **Types → `/types`**.
+
+---
+
+### Context (`TypesCacheContext.jsx`)
+
+**File:** `src/context/TypesCacheContext.jsx`
+
+Minimal cache — no listing state needed since all 18 types and their full effectiveness data are already in `colorMap.js`. Only the per-type Pokémon list requires an API call.
+
+```js
+const { fetchTypeDetail } = useTypesCache();
+```
+
+- **`fetchTypeDetail(name)`** — fetches `/type/:name`, caches raw response in `detailCacheRef` (`useRef(new Map())`); returns from cache on repeat calls
+- No batch loading, no loading state — only called on `TypeDetail` mount
+
+---
+
+### Listing Page (`/types`)
+
+**Files:** `src/pages/Types/TypesLanding.jsx` + `Types.styled.jsx`
+
+**Layout (top to bottom):**
+1. `TypePageTitle` + `TypeTitleLine` (matches `/moves` / `/abilities` header pattern)
+2. `PageQuoteBlock` with `QuoteFirstSentence` — same styled quote block used on `/moves` and `/abilities`
+3. Responsive type cards grid — 18 cards, one per type
+4. 18×18 effectiveness chart with legend
+
+**Type cards grid (`TypeCardsGrid`):**
+- 6 columns desktop → 4 tablet (≤900px) → 3 mobile (≤600px) → 2 narrow (≤400px)
+- Each `TypeCard` is a styled `RouterLink` to `/types/:name` with `background: colorMap[type].color`
+- Card contents: type icon (from `colorMap[type].icon`, rendered as React component) + capitalized type name
+- Hover: `translateY(-3px)` + deeper `box-shadow`
+
+**18×18 effectiveness chart:**
+- Rows = attacking type, columns = defending type
+- Cell value: `colorMap[defType].typeChart[atkType] ?? 1`
+- Cell size: `36×36px`; table `min-width: 720px`; `ChartSection` has `overflow-x: auto` for mobile
+- `ChartSection` uses `display: flex; flex-direction: column; align-items: center` to center the table horizontally
+- Color coding:
+
+| Multiplier | Background | Text |
+|------------|-----------|------|
+| 2× | `rgba(76,175,80,0.85)` (green) | `#fff` |
+| ½× | `rgba(239,83,80,0.75)` (red) | `#fff` |
+| 0× | `rgba(60,60,60,0.9)` (dark grey) | `rgba(255,255,255,0.3)` |
+| 1× | `rgba(30,30,30,0.5)` (transparent) | `rgba(255,255,255,0.15)` |
+
+- Cell labels: `2×`, `½`, `0`, or empty string for 1×
+- `ChartCell` hover: `outline: 1px solid rgba(255,204,0,0.7)` — no row/column highlight currently implemented
+- **Axis labels are clickable `RouterLink`s** (`ChartLabelLink`) to `/types/:name` — inherit parent type color, turn gold with underline on hover
+- Column header abbreviation: `defType.slice(0, 3).toUpperCase()` (e.g. `WAT`, `FIR`)
+- Row label: full capitalized type name
+- Legend below chart: four `LegendItem` entries with colored `LegendSwatch` squares
+
+**No API calls on `/types`** — all data sourced from `colorMap.js`.
+
+---
+
+### Detail Page (`/types/:name`)
+
+**Files:** `src/pages/Types/TypeDetail.jsx` + `TypeDetail.styled.jsx`
+
+**Layout (top to bottom):**
+1. `BackLink` → `/types`
+2. `TypeBanner` — full-width colored banner (`colorMap[name].color` background) with type icon + capitalized type name
+3. **Offense** section (`EffectivenessSection`) — what this type does when attacking
+4. **Defense** section (`EffectivenessSection`) — what this type takes when defending
+5. **Pokémon with this type** (`PokemonSection`) — alphabetical list linking to `/collection/:id`
+
+**Offense subsections:**
+- Super Effective Against (2×): `ALL_TYPES.filter(def => colorMap[def].typeChart[name] === 2)`
+- Not Very Effective Against (½×): `colorMap[def].typeChart[name] === 0.5`
+- No Effect Against (0×): `colorMap[def].typeChart[name] === 0`
+
+**Defense subsections:**
+- Weak To (2×): `ALL_TYPES.filter(atk => colorMap[name].typeChart[atk] === 2)`
+- Resistant To (½×): `colorMap[name].typeChart[atk] === 0.5`
+- Immune To (0×): `colorMap[name].typeChart[atk] === 0`
+
+All effectiveness computed from `colorMap` with no API calls. `NoneLabel` shown when a category is empty.
+
+**Type badge pills (`EffBadge`):** styled `RouterLink` to `/types/:otherType`; background `${typecolor}33` (20% alpha), solid border, colored text; hover brightens background to `55` alpha + `translateY(-1px)`.
+
+**Pokémon list:** fetched from `/type/:name` via `fetchTypeDetail`, filtered to base forms (`parseInt(id) <= 1025`), sorted alphabetically. `PokemonGrid` is 3 columns desktop → 2 tablet → 1 narrow. Each `PokemonEntry` is a styled `RouterLink` to `/collection/:id` with gold hover + left-border highlight (same pattern as `/abilities/:name`).
