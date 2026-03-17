@@ -1010,3 +1010,192 @@ All section headings on `/collection/:id` share a single consistent style:
 | 300° | 10 o'clock (top-left) | Attack |
 
 Attack and Special Attack sit on the left; Defense and Special Defense on the right; HP at top; Speed at bottom. Only the array order changed — all rendering math, icon/number positioning, polygon, and grid lines are untouched.
+
+---
+
+## Battle System
+
+### Route + Nav
+
+Route `/battle` added to `App.jsx`. **"Battle"** appears as a top-level nav link in `Nav.jsx` between the Pokémon dropdown and "Pokemon Cards" — same `Link` styled component, Russo One gold.
+
+Provider nesting (final):
+```
+CartProvider > PokemonCacheProvider > AbilitiesCacheProvider > MovesCacheProvider > TypesCacheProvider
+```
+`BattlePage` needs no additional context provider — it uses `usePokemonCache()` directly.
+
+---
+
+### `/battle` Page (`src/pages/Battle/BattlePage.jsx`)
+
+**Layout (top to bottom):**
+1. "⚔ Battle Arena" page title + gold gradient line
+2. Two `SelectorPanel`s in a `SelectorRow` flex row with a gold "VS" divider — stack vertically ≤700px
+3. Pulsing gold `BattleButton` (disabled until both panels filled)
+4. `SuggestionsSection` — "Suggested Battles" heading + 3 cards + Shuffle button
+
+**Selector panels:** Each panel contains:
+- Autocomplete search input (same debounce/ranking/outside-click pattern as `/collection` search)
+- Dropdown results with dream-world SVG sprite (fallback to official-artwork PNG), gold name, muted `#XXX` number
+- `EmptySlot` placeholder when no Pokémon selected
+- Once selected: official-artwork PNG (200px), capitalized name, type badges, lore tier badge, 3×2 mini stat grid (HP/Atk/Def/SpA/SpD/Spd)
+
+**`extractPokemon(cacheResult)`** — converts `{ pokemonDetailData, pokemonSpeciesData }` from the cache into the battle-usable shape:
+```js
+{ id, name, types, stats, legendary, mythical, habitat, captureRate }
+```
+`habitat` = `s?.habitat?.name ?? null`; `captureRate` = `s?.capture_rate ?? null`. `stats` is an object `{ hp, attack, defense, specialAttack, specialDefense, speed }` built from the raw `stats` array.
+
+**Suggested Battles:**
+- 3 fully random pairs, regenerated on load and on "⟳ Shuffle"
+- `buildSuggestions(list)` picks 6 unique IDs from 1–1025 using a `usedIds` Set — guarantees no Pokémon appears twice across all 3 pairs
+- Names derived from `listState.list[id - 1]?.name`; falls back to `#${id}` before list loads
+- Clicking a card calls `fetchPokemonDetail` for both IDs in parallel via `Promise.all`, then sets `pokemonA`/`pokemonB`; cards dim to `opacity: 0.6` while loading
+- Card styling: `rgba(255,255,255,0.03)` bg, `1px solid rgba(255,204,0,0.3)` border, `border-radius: 8px`; hover lifts to `rgba(255,255,255,0.06)` with `border-color: #ffcc00`
+- Each card shows two dream-world sprites (40px, with official-artwork `onError` fallback), gold names, "VS" divider, "Battle this matchup →" CTA in muted gold
+
+---
+
+### Battle Power Score Engine (`src/utils/battleEngine.js`)
+
+**`calculateBPS(pokemonA, pokemonB)`** returns:
+```js
+{ aBPS, bBPS, aBestMulti, bBestMulti, aDamage, bDamage, aStatBreakdown, bStatBreakdown }
+```
+
+Three components sum to BPS:
+
+**1. Offensive damage** — `(bestOffensiveStat / bestOpponentDefense) * bestTypeMultiplier * speedBonus`
+- `speedBonus`: 1.1 if faster, 1.0 if tied, 0.95 if slower
+- Type multiplier from `colorMap[defType].typeChart[atkType]` — best multiplier across all attacking types
+
+**2. Durability** — `(HP / incomingDamageRate) * 2`
+
+**3. Individual weighted stat score** (replaces old TBS component):
+```
+statsScore = (
+  (hp/255 * 100 * 0.04) +
+  (atk/255 * 100 * 0.05) +
+  (def/255 * 100 * 0.04) +
+  (spAtk/255 * 100 * 0.05) +
+  (spDef/255 * 100 * 0.04) +
+  (spd/255 * 100 * 0.03)
+) * 100 / 25        // normalizes to 0-100
+```
+Added to BPS as `statsScore * 0.03` (scaled to ~0-3, same magnitude as other components).
+
+`aStatBreakdown` / `bStatBreakdown`: `{ total, contributions: { hp, attack, defense, specialAttack, specialDefense, speed } }` — per-stat contribution values used by the Breakdown tab.
+
+**`determineWinner(aBPS, bBPS)`** — returns `'A'`, `'B'`, or `'tie'`.
+
+**`getLoreTierInfo(pokemon)`** — returns `{ label, color }` based on mythical > legendary > TBS thresholds (Pseudo-Legendary ≥600, Elite ≥500, Strong ≥400, Standard).
+
+**`APEX_POKEMON`** set (18 cosmic-tier Pokémon, used for narrator tier 4):
+`arceus, mewtwo, giratina, dialga, palkia, rayquaza, kyogre, groudon, zygarde, eternatus, necrozma, lunala, solgaleo, xerneas, yveltal, reshiram, zekrom, kyurem`
+
+**`FAN_FAVOURITES`** set (used for narrator legacy note):
+`charizard, gengar, lucario, eevee, umbreon, espeon, gardevoir, blaziken, greninja, mimikyu, sylveon, mewtwo, dragonite, tyranitar, garchomp, snorlax, mew`
+
+---
+
+### Battle Animation (`BattleOverlay` in BattlePage.jsx)
+
+Full-screen `OverlayBackdrop` (`position: fixed; inset: 0; z-index: 9000`). Five phases driven by `setTimeout` chain:
+
+| Phase | Fires at | What happens |
+|-------|----------|--------------|
+| 1 — intro | 50ms | Combatants appear (`floatIn` keyframe), HP bars visible at 100% |
+| 2 — tension | 1050ms | Title text changes to `…` |
+| 3 — drain | 1850ms | HP bars transition to final values over 1.5s CSS `transition: width 1.5s linear` |
+| 4 — result flash | 3400ms | Title shows winner name or "It's a tie!" |
+| complete | 4300ms | `onComplete()` fired, overlay removed |
+
+**HP bar math:**
+- Both bars start at `100%`
+- **Loser** always drains to `0%`
+- **Winner** drains to `max(1%, ((winnerBPS - loserBPS) / winnerBPS) * 100%)`
+- Minimum 1% ensures winner always shows a sliver
+- Tie: both stay at `100%`
+
+**`HealthFill` color thresholds** (based on final `$pct`):
+- `> 40%` → green `#4caf50`
+- `15–40%` → orange `#ff9800`
+- `< 15%` → red `#f44336` (close victory)
+
+---
+
+### Results Panel (`ResultsPanel` in BattlePage.jsx)
+
+**Winner banner:** Pokémon artwork (90px) + "Winner" label + name as `PokemonNameLink` (type-colored, gold hover glow, links to `/collection/:id`). Tie shows plain white "It's a tie!".
+
+**Two tabs:**
+
+#### Tab 1 — Battle Narrative (AI)
+
+Claude API called immediately on `ResultsPanel` mount via `runFetch()`. Uses `cancelledRef` (not a `let cancelled` closure) so `runFetch` can also be called from the "↺ Regenerate" button without stale closure issues.
+
+**API call:** `POST https://api.anthropic.com/v1/messages` with:
+- `system`: tiered narrator instruction (see below)
+- `messages`: `[{ role: 'user', content: userPrompt }]`
+- `model: 'claude-sonnet-4-6'`, `max_tokens: 450`
+- Header: `anthropic-dangerous-direct-browser-access: true`
+
+**Narrator awe tiers** (determined by `getSystemPrompt(pokemonA, pokemonB)`, apex check takes priority):
+
+| Tier | Condition | Voice |
+|------|-----------|-------|
+| 1 — Standard | No legendary/mythical | Cold Pokédex analyst, no spectator language |
+| 2 — One legendary | One legendary/mythical | Brief one-sentence rarity note, then clinical |
+| 3 — Both legendary | Both legendary/mythical | Single understated rarity note, then data-only |
+| 4 — Apex present | Either in APEX_POKEMON set | One sentence specific lore reference, then clinical |
+
+Fan favourites (either Pokémon in `FAN_FAVOURITES`): appended to system prompt as one sentence — `"[Name] carries a legacy of trainer attachment that field data alone cannot quantify."`
+
+**User prompt** (`buildNarrativePrompt` returns `{ system, userPrompt }`):
+```
+WINNER: [name]
+Type: [types] | Lore: [loreTierLabel] | TBS: [tbs] | Habitat: [habitat] | Capture Rate: [captureRate]
+
+LOSER: [name]
+...same fields...
+
+Victory margin: Decisive/Moderate/Narrow ([x.xx] point BPS differential)
+Leading factors: [top 2-3 auto-derived: type advantage, speed, offense, TBS, defense]
+
+Explain why [winner] prevailed. Reference the specific data above.
+```
+
+`dominance` label: `>40%` margin → Decisive, `>15%` → Moderate, else Narrow (based on `(winnerBPS - loserBPS) / winnerBPS * 100`).
+
+Narrative text rendered via `renderNarrativeWithLinks(text, pokemonA, pokemonB)` — splits on either Pokémon's display name (case-insensitive regex), wraps matches in `PokemonNameLink` with primary type color.
+
+Error state shows actual `err.message` in red italic. "↺ Retry" button reruns fetch. "↺ Regenerate" shown after success.
+
+#### Tab 2 — Battle Breakdown
+
+Instant (no API call). `BreakdownGrid` 2-column layout, one `BreakdownCard` per Pokémon:
+- Name as `PokemonNameLink` (type-colored, links to `/collection/:id`)
+- Battle Score (BPS value)
+- Type Advantage (`MultiplierBadge`, colored green/orange/red by multiplier)
+- Offense Rating (damage value)
+- `StatBreakdownSection`: mini bar chart per stat showing individual weighted contributions; bars highlighted gold when winning that stat vs opponent
+
+---
+
+### Battle Styled Components (`src/pages/Battle/Battle.styled.jsx`)
+
+All battle UI styled components. Key exports:
+- `PokemonNameLink` — `styled(Link)`, `$typecolor` prop, gold hover glow — matches `/moves/:name` Pokémon list style
+- `StatBreakdownFill` — `$highlight` prop (boolean-as-number); gold when winning stat, white-muted when losing
+- `HealthFill` — `$pct` prop drives color threshold and CSS transition target width
+- `ShuffleButton` — gold outlined, Russo One, gold `text-shadow` glow on hover
+
+---
+
+### API Key Security
+
+- `VITE_ANTHROPIC_API_KEY` stored in `.env` only — never hardcoded anywhere
+- `.env` listed in `.gitignore` (lines 14–15: `.env` and `.env.*`) — never git-tracked
+- Accessed only via `import.meta.env.VITE_ANTHROPIC_API_KEY` in `BattlePage.jsx` inside `fetchNarrative()`
+- Dev server must be restarted after editing `.env` (Vite reads env vars at startup only)
