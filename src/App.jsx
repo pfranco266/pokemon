@@ -14,6 +14,7 @@ import MovesLanding from './pages/Moves/MovesLanding';
 import MoveDetail from './pages/Moves/MoveDetail';
 import TypesLanding from './pages/Types/TypesLanding';
 import TypeDetail from './pages/Types/TypeDetail';
+import BattlePage from './pages/Battle/BattlePage';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -45,6 +46,7 @@ function App() {
                   <Route path="/moves/:name" element={<MoveDetail />}/>
                   <Route path="/types" element={<TypesLanding />}/>
                   <Route path="/types/:name" element={<TypeDetail />}/>
+                  <Route path="/battle" element={<BattlePage />}/>
               </Routes>
 
             </TypesCacheProvider>
