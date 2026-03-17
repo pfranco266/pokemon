@@ -30,7 +30,7 @@ function Nav() {
                     >
                         Pokémon ▾
                     </NavDropdownTrigger>
-                    <NavDropdown isopen={pokemonOpen ? 1 : 0}>
+                    <NavDropdown $isopen={pokemonOpen ? 1 : 0}>
                         <NavDropdownItem to="/collection" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/collection'); }}>
                             Pokémon
                         </NavDropdownItem>
