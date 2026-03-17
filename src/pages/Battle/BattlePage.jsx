@@ -697,8 +697,8 @@ function BattlePage() {
     const [suggestions, setSuggestions]       = useState(() => buildSuggestions([]));
     const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
-    // Ensure list is loaded for autocomplete + random suggestion names
-    useEffect(() => { fetchAllListPages(); }, [fetchAllListPages]);
+    // Ensure list is loaded for autocomplete + random suggestion names (run once on mount)
+    useEffect(() => { fetchAllListPages(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Refresh random suggestion once list is fully loaded
     useEffect(() => {
