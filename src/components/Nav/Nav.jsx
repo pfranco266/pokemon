@@ -40,6 +40,9 @@ function Nav() {
                         <NavDropdownItem to="/moves" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/moves'); }}>
                             Moves
                         </NavDropdownItem>
+                        <NavDropdownItem to="/types" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/types'); }}>
+                            Types
+                        </NavDropdownItem>
                     </NavDropdown>
                 </NavDropdownWrapper>
 

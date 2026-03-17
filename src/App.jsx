@@ -7,10 +7,13 @@ import { CartProvider } from './context/CartContext';
 import { PokemonCacheProvider } from './context/PokemonCacheContext';
 import { AbilitiesCacheProvider } from './context/AbilitiesCacheContext';
 import { MovesCacheProvider } from './context/MovesCacheContext';
+import { TypesCacheProvider } from './context/TypesCacheContext';
 import AbilitiesLanding from './pages/Abilities/AbilitiesLanding';
 import AbilityDetail from './pages/Abilities/AbilityDetail';
 import MovesLanding from './pages/Moves/MovesLanding';
 import MoveDetail from './pages/Moves/MoveDetail';
+import TypesLanding from './pages/Types/TypesLanding';
+import TypeDetail from './pages/Types/TypeDetail';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -27,6 +30,7 @@ function App() {
             <PokemonCacheProvider>
             <AbilitiesCacheProvider>
             <MovesCacheProvider>
+            <TypesCacheProvider>
 
               <Nav/>
               <Routes>
@@ -39,8 +43,11 @@ function App() {
                   <Route path="/abilities/:name" element={<AbilityDetail />}/>
                   <Route path="/moves" element={<MovesLanding />}/>
                   <Route path="/moves/:name" element={<MoveDetail />}/>
+                  <Route path="/types" element={<TypesLanding />}/>
+                  <Route path="/types/:name" element={<TypeDetail />}/>
               </Routes>
 
+            </TypesCacheProvider>
             </MovesCacheProvider>
             </AbilitiesCacheProvider>
             </PokemonCacheProvider>

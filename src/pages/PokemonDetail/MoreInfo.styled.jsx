@@ -668,6 +668,7 @@ export const CompactBanner = styled.div`
   align-items: center;
   gap: 0.75rem;
   box-sizing: border-box;
+  overflow: hidden;
   transform: translateY(${({ visible }) => visible ? '0' : '-100%'});
   transition: transform 0.2s ease;
 `;
@@ -762,35 +763,32 @@ export const MythicalBanner = styled.h1`
   white-space: nowrap;
   @media(max-width: 900px) {
     font-size: 2em;
-  
   }
 `;
 
 export const LegendaryBanner = styled.h2`
-position: absolute;
-top: 45%;
-left: 1%;
-font-size: 2.5em;
-color: ${({ type }) => colorMap[type]?.color};
-background: linear-gradient(
-  to right,
-  ${({ type }) => colorMap[type]?.color} 0%,
-  white 10%,
-  ${({ type }) => colorMap[type]?.color} 20%
-);
-background-size: 400px 100%;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-animation: ${shine} 3s infinite linear;
--webkit-text-size-adjust: none;
-font-weight: 900;
-text-decoration: none;
-white-space: nowrap;
-@media(max-width: 900px) {
-  font-size: 2em;
-
-}
-    
+  position: absolute;
+  top: 45%;
+  left: 1%;
+  font-size: 2.5em;
+  color: ${({ type }) => colorMap[type]?.color};
+  background: linear-gradient(
+    to right,
+    ${({ type }) => colorMap[type]?.color} 0%,
+    white 10%,
+    ${({ type }) => colorMap[type]?.color} 20%
+  );
+  background-size: 400px 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: ${shine} 3s infinite linear;
+  -webkit-text-size-adjust: none;
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+  @media(max-width: 900px) {
+    font-size: 2em;
+  }
 `
 
 
