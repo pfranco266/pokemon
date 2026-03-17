@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTypesCache } from '../../context/TypesCacheContext';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import colorMap from '../../utils/colorMap';
 import { HomeContainer } from '../Home/Home.styled';
+import { PokemonList, PokemonEntry } from '../Moves/Moves.styled';
 import {
     BackLink,
     TypeBanner,
@@ -16,10 +17,11 @@ import {
     EffBadge,
     NoneLabel,
     PokemonSection,
-    PokemonGrid,
-    PokemonEntry,
     LoadingText,
 } from './TypeDetail.styled';
+
+// Module-level cache — persists for the full session without re-fetching
+const typeFetchCache = new Map();
 
 const ALL_TYPES = Object.keys(colorMap);
 
@@ -36,14 +38,63 @@ function TypeDetail() {
     const { fetchTypeDetail } = useTypesCache();
     const [typeData, setTypeData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [pokemonTypeMap, setPokemonTypeMap] = useState({});
 
     useEffect(() => {
         setLoading(true);
         setTypeData(null);
+        setPokemonTypeMap({});
         fetchTypeDetail(name)
             .then(data => { setTypeData(data); setLoading(false); })
             .catch(() => setLoading(false));
     }, [name, fetchTypeDetail]);
+
+    // Pokémon with this type — filter to base forms, sort alphabetically
+    const rawPokemon = typeData?.pokemon ?? [];
+    const pokemonList = useMemo(() => rawPokemon
+        .filter(p => isBaseForm(p.pokemon.url))
+        .sort((a, b) => a.pokemon.name.localeCompare(b.pokemon.name)),
+    [rawPokemon]);
+
+    // Batch-fetch primary types for Pokémon in the list
+    useEffect(() => {
+        if (pokemonList.length === 0) return;
+
+        const initialMap = {};
+        pokemonList.forEach(p => {
+            if (typeFetchCache.has(p.pokemon.name)) initialMap[p.pokemon.name] = typeFetchCache.get(p.pokemon.name);
+        });
+        setPokemonTypeMap(initialMap);
+
+        const toFetch = pokemonList.filter(p => !typeFetchCache.has(p.pokemon.name));
+        if (toFetch.length === 0) return;
+
+        let cancelled = false;
+        const BATCH = 20;
+
+        (async () => {
+            const map = { ...initialMap };
+            for (let i = 0; i < toFetch.length; i += BATCH) {
+                if (cancelled) break;
+                const batch = toFetch.slice(i, i + BATCH);
+                const results = await Promise.all(
+                    batch.map(p =>
+                        fetch(`https://pokeapi.co/api/v2/pokemon/${p.pokemon.name}`)
+                            .then(r => r.json())
+                            .then(d => ({ name: p.pokemon.name, type: d.types?.[0]?.type?.name ?? null }))
+                            .catch(() => ({ name: p.pokemon.name, type: null }))
+                    )
+                );
+                results.forEach(({ name: pName, type }) => {
+                    typeFetchCache.set(pName, type);
+                    map[pName] = type;
+                });
+                if (!cancelled) setPokemonTypeMap({ ...map });
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [pokemonList]);
 
     const typeInfo = colorMap[name];
 
@@ -62,12 +113,6 @@ function TypeDetail() {
     const weakTo = ALL_TYPES.filter(atk => (colorMap[name].typeChart[atk] ?? 1) === 2);
     const resistantTo = ALL_TYPES.filter(atk => (colorMap[name].typeChart[atk] ?? 1) === 0.5);
     const immuneTo = ALL_TYPES.filter(atk => (colorMap[name].typeChart[atk] ?? 1) === 0);
-
-    // Pokémon with this type — filter to base forms, sort alphabetically
-    const rawPokemon = typeData.pokemon ?? [];
-    const pokemonList = rawPokemon
-        .filter(p => isBaseForm(p.pokemon.url))
-        .sort((a, b) => a.pokemon.name.localeCompare(b.pokemon.name));
 
     function TypeLink({ type }) {
         const c = colorMap[type]?.color;
@@ -146,16 +191,17 @@ function TypeDetail() {
             {pokemonList.length > 0 && (
                 <PokemonSection>
                     <SectionHeading>Pokémon with {capitalizeFirstLetter(name)} type</SectionHeading>
-                    <PokemonGrid>
+                    <PokemonList>
                         {pokemonList.map(p => (
                             <PokemonEntry
                                 key={p.pokemon.name}
                                 to={`/collection/${getIdFromUrl(p.pokemon.url)}`}
+                                typecolor={colorMap[pokemonTypeMap[p.pokemon.name]]?.color ?? null}
                             >
                                 {capitalizeFirstLetter(p.pokemon.name)}
                             </PokemonEntry>
                         ))}
-                    </PokemonGrid>
+                    </PokemonList>
                 </PokemonSection>
             )}
         </HomeContainer>

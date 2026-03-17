@@ -915,4 +915,35 @@ All effectiveness computed from `colorMap` with no API calls. `NoneLabel` shown 
 
 **Type badge pills (`EffBadge`):** styled `RouterLink` to `/types/:otherType`; background `${typecolor}33` (20% alpha), solid border, colored text; hover brightens background to `55` alpha + `translateY(-1px)`.
 
-**Pokémon list:** fetched from `/type/:name` via `fetchTypeDetail`, filtered to base forms (`parseInt(id) <= 1025`), sorted alphabetically. `PokemonGrid` is 3 columns desktop → 2 tablet → 1 narrow. Each `PokemonEntry` is a styled `RouterLink` to `/collection/:id` with gold hover + left-border highlight (same pattern as `/abilities/:name`).
+**Pokémon list:** fetched from `/type/:name` via `fetchTypeDetail`, filtered to base forms (`parseInt(id) <= 1025`), sorted alphabetically. Uses `PokemonList` and `PokemonEntry` imported directly from `Moves.styled.jsx` — identical layout and styling to the "Pokémon that learn this Move" list on `/moves/:name`. Primary type fetched per Pokémon via the same module-level `typeFetchCache` + batch-fetch pattern as `MoveDetail.jsx`; passed as `typecolor` prop to `PokemonEntry` for type-colored bold text and gold glow on hover.
+
+---
+
+## Rules of Hooks — TypeDetail.jsx Fix
+
+All `useState`, `useEffect`, and `useMemo` calls must appear at the top of the component function, before any conditional logic or early returns. A `useMemo` was incorrectly placed after the loading/not-found early returns, causing React's "change in order of hooks between renders" error.
+
+**Correct order in `TypeDetail.jsx`:**
+1. All `useState` declarations
+2. `useEffect` for data fetch (sets `typeData`, `loading`, `pokemonTypeMap`)
+3. `useMemo` for `pokemonList` (depends on `typeData?.pokemon`)
+4. `useEffect` for batch type-fetch (depends on `pokemonList`)
+5. Early returns (`if (loading)`, `if (!typeData || !typeInfo)`)
+6. Derived constants and JSX
+
+The `useMemo` for `pokemonList` safely references `typeData?.pokemon ?? []` — returns `[]` on the first render before data loads, which is correct.
+
+---
+
+## Nav Dropdown — Transient Prop Fix
+
+**Files:** `src/components/Nav/Nav.jsx`, `Nav.styled.jsx`
+
+The `isopen` prop on `NavDropdown` was forwarded to the underlying DOM `<div>`, causing a styled-components unknown-prop warning.
+
+**Fix:** renamed to `$isopen` (styled-components transient prop syntax). The `$` prefix tells styled-components to consume the prop for styling only and never pass it to the DOM.
+
+- `Nav.styled.jsx`: all three template literal references updated: `${({ $isopen }) => $isopen ? ... }`
+- `Nav.jsx`: prop passed as `$isopen={pokemonOpen ? 1 : 0}`
+
+Apply the same `$` prefix pattern to any other boolean/numeric styled-component props that are not valid HTML attributes (e.g. `typecolor`, `tiercolor`, `isopen`, `exceptional`), particularly when styled-components warns about them.

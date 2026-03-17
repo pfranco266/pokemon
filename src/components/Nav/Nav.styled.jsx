@@ -168,9 +168,9 @@ export const NavDropdown = styled.div`
     display: flex;
     flex-direction: column;
     z-index: 9999;
-    opacity: ${({ isopen }) => isopen ? 1 : 0};
-    pointer-events: ${({ isopen }) => isopen ? 'all' : 'none'};
-    transform: ${({ isopen }) => isopen ? 'translateY(0)' : 'translateY(-6px)'};
+    opacity: ${({ $isopen }) => $isopen ? 1 : 0};
+    pointer-events: ${({ $isopen }) => $isopen ? 'all' : 'none'};
+    transform: ${({ $isopen }) => $isopen ? 'translateY(0)' : 'translateY(-6px)'};
     transition: opacity 0.15s ease, transform 0.15s ease;
 `;
 
