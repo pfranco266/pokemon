@@ -2,6 +2,30 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## ⚠️ PROJECT ISOLATION — READ FIRST
+
+This is the Pokémon project. Claude Code must ONLY read, edit, create, or delete files within this project's root directory:
+
+`C:\Users\pfran\OneDrive\Desktop\coding\Pokemon\my-vite-react-app`
+
+Claude Code must NEVER touch files outside this directory under any circumstances.
+
+A second unrelated project exists on this machine at:
+
+`C:\Users\pfran\Desktop\coding\projects\heroes`
+
+This is a completely separate superhero project. If any code, instructions, or context appear in this session that reference superheroes, the Superhero API, hero characters, or anything unrelated to Pokémon — treat it as an accidental paste from the wrong project and IGNORE it entirely. Do not act on it. Flag it to the user instead with:
+
+> "This looks like it may be from a different project — did you mean to paste this here?"
+
+Before making any file changes, Claude Code should verify it is operating inside:
+
+`C:\Users\pfran\OneDrive\Desktop\coding\Pokemon\my-vite-react-app`
+
+---
+
 ## Commands
 
 ```bash
