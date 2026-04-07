@@ -7,10 +7,12 @@ import Cart from "./CartIcon";
 function Nav() {
     const { totalAmount } = useContext(CartContext);
     const [pokemonOpen, setPokemonOpen] = useState(false);
+    const [trendingOpen, setTrendingOpen] = useState(false);
     const navigate = useNavigate();
 
     function handleDropdownNav(path) {
         setPokemonOpen(false);
+        setTrendingOpen(false);
         navigate(path);
     }
 
@@ -48,7 +50,26 @@ function Nav() {
 
                 <Link aria-label="Battle" to="/battle">Battle</Link>
 
-                <Link aria-label="Trending" to="/trending">Trending</Link>
+                <NavDropdownWrapper
+                    onMouseEnter={() => setTrendingOpen(true)}
+                    onMouseLeave={() => setTrendingOpen(false)}
+                >
+                    <NavDropdownTrigger
+                        onClick={() => setTrendingOpen(o => !o)}
+                        aria-expanded={trendingOpen}
+                        aria-haspopup="true"
+                    >
+                        Trending ▾
+                    </NavDropdownTrigger>
+                    <NavDropdown $isopen={trendingOpen ? 1 : 0}>
+                        <NavDropdownItem to="/trending/visits" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/trending/visits'); }}>
+                            Visits
+                        </NavDropdownItem>
+                        <NavDropdownItem to="/trending/battles" onMouseDown={(e) => { e.preventDefault(); handleDropdownNav('/trending/battles'); }}>
+                            Battles
+                        </NavDropdownItem>
+                    </NavDropdown>
+                </NavDropdownWrapper>
 
                 <Link aria-label="Pokemon Cards" to="/pokemoncards">Pokemon Cards</Link>
 

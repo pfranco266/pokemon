@@ -18,7 +18,7 @@ import {
     RefreshButton,
 } from './Trending.styled';
 
-function TrendingPage() {
+function TrendingVisits() {
     const [rankings, setRankings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -41,7 +41,6 @@ function TrendingPage() {
                 throw supaError;
             }
 
-            // Aggregate client-side
             const counts = {};
             (data ?? []).forEach(({ pokemon_id, pokemon_name }) => {
                 if (!counts[pokemon_id]) {
@@ -68,9 +67,9 @@ function TrendingPage() {
 
     return (
         <HomeContainer>
-            <TrendingPageTitle>Trending</TrendingPageTitle>
+            <TrendingPageTitle>Most Visited Pokémon</TrendingPageTitle>
             <TrendingTitleLine />
-            <TrendingSubtitle>Most visited Pokémon in the last 7 days</TrendingSubtitle>
+            <TrendingSubtitle>Most visited Pokémon pages in the last 7 days</TrendingSubtitle>
 
             {loading && <LoadingText>Loading trending Pokémon...</LoadingText>}
 
@@ -113,4 +112,4 @@ function TrendingPage() {
     );
 }
 
-export default TrendingPage;
+export default TrendingVisits;

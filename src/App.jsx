@@ -15,7 +15,8 @@ import MoveDetail from './pages/Moves/MoveDetail';
 import TypesLanding from './pages/Types/TypesLanding';
 import TypeDetail from './pages/Types/TypeDetail';
 import BattlePage from './pages/Battle/BattlePage';
-import TrendingPage from './pages/Trending/TrendingPage';
+import TrendingVisits from './pages/Trending/TrendingVisits';
+import TrendingBattles from './pages/Trending/TrendingBattles';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -68,7 +69,8 @@ function App() {
                   <Route path="/types" element={<TypesLanding />}/>
                   <Route path="/types/:name" element={<TypeDetail />}/>
                   <Route path="/battle" element={<BattlePage />}/>
-                  <Route path="/trending" element={<TrendingPage />}/>
+                  <Route path="/trending/visits" element={<TrendingVisits />}/>
+                  <Route path="/trending/battles" element={<TrendingBattles />}/>
               </Routes>
 
             </TypesCacheProvider>

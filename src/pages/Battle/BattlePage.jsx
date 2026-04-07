@@ -1,10 +1,28 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { usePokemonCache } from '../../context/PokemonCacheContext';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import colorMap from '../../utils/colorMap';
 import { calculateBPS, determineWinner, getLoreTierInfo } from '../../utils/battleEngine';
 import { trackEvent } from '../../utils/analytics';
+import { supabase } from '../../utils/supabaseClient';
+
+async function trackBattle(pokemon1, pokemon2, winnerPokemon) {
+    try {
+        await supabase
+            .from('battle_history')
+            .insert({
+                pokemon1_id: pokemon1.id,
+                pokemon1_name: pokemon1.name,
+                pokemon2_id: pokemon2.id,
+                pokemon2_name: pokemon2.name,
+                winner_id: winnerPokemon?.id ?? null,
+                winner_name: winnerPokemon?.name ?? null,
+            });
+    } catch (err) {
+        console.warn('Battle tracking failed:', err);
+    }
+}
 import {
     BattlePageWrapper,
     BattlePageTitle,
@@ -692,6 +710,7 @@ function ResultsPanel({ pokemonA, pokemonB, winner, bpsResult, onReset }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 function BattlePage() {
+    const location = useLocation();
     const { listState, fetchAllListPages, fetchPokemonDetail } = usePokemonCache();
     const [pokemonA, setPokemonA] = useState(null);
     const [pokemonB, setPokemonB] = useState(null);
@@ -703,6 +722,19 @@ function BattlePage() {
 
     // Ensure list is loaded for autocomplete + random suggestion names (run once on mount)
     useEffect(() => { fetchAllListPages(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Pre-fill Pokémon selectors from navigation state (e.g. clicked from TrendingBattles)
+    useEffect(() => {
+        const { pokemonAId, pokemonBId } = location.state ?? {};
+        if (!pokemonAId || !pokemonBId) return;
+        Promise.all([
+            fetchPokemonDetail(String(pokemonAId)),
+            fetchPokemonDetail(String(pokemonBId)),
+        ]).then(([rawA, rawB]) => {
+            if (rawA) setPokemonA(extractPokemon(rawA));
+            if (rawB) setPokemonB(extractPokemon(rawB));
+        }).catch(() => {});
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Refresh random suggestion once list is fully loaded
     useEffect(() => {
@@ -741,6 +773,8 @@ function BattlePage() {
 
     function handleAnimationComplete() {
         setPhase('results');
+        const winnerPokemon = winner === 'A' ? pokemonA : winner === 'B' ? pokemonB : null;
+        trackBattle(pokemonA, pokemonB, winnerPokemon);
     }
 
     function handleReset() {
