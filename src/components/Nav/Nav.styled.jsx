@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../utils/theme";
 import { Link as RouterLink } from 'react-router-dom';
-import { MdOutlineShoppingCart } from "react-icons/md";
 
 export const NavContainer = styled.div`
     width: 100%;
@@ -60,57 +59,6 @@ export const Link = styled(RouterLink)`
         font-size: 1.1rem;
         padding: 4px 2px;
     }
-`;
-
-export const CartContainer = styled.div`
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.15s ease;
-
-    &:hover svg {
-        color: #ffffff;
-        filter: drop-shadow(0 0 6px rgba(255, 204, 0, 0.8));
-    }
-`;
-
-export const CartIcon = styled(MdOutlineShoppingCart)`
-    height: 26px;
-    width: 26px;
-    color: #ffcc00;
-    transition: all 0.15s ease;
-    @media(max-width: 600px) {
-        height: 22px;
-        width: 22px;
-        margin-right: 8px;
-    }
-`;
-
-export const AmountContainer = styled.div`
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: -4px;
-    left: 60%;
-    border-radius: 10px;
-    border: 1px solid #ffcc00;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 3px;
-    background: #0a0a0a;
-    @media(max-width: 600px) {
-        top: -3px;
-        left: 55%;
-    }
-`;
-
-export const CartAmount = styled.span`
-    color: #ffcc00;
-    font-size: 0.72rem;
-    font-family: 'Russo One', sans-serif;
-    line-height: 1;
 `;
 
 // Pokemon nav dropdown
