@@ -1354,3 +1354,19 @@ Queries `battle_history`. Two sections, both re-aggregated client-side.
 `SectionTitle`, `SectionLine`, `TimeToggleRow`, `TimeToggleBtn`, `PickRightCol`, `PickCount`, `WinCount`, `WinRateBadge`, `MatchupRow`, `MatchupPoke`, `MatchupSprite`, `MatchupPokeName`, `MatchupVs`, `MatchupRight`, `MatchupCount`, `MatchupWinLine`
 
 Both pages import from `Trending.styled.jsx` alongside the existing shared exports (`TrendingPageTitle`, `TrendingTitleLine`, `TrendingSubtitle`, `TrendingList`, `TrendingRow`, `RankNumber`, `PokemonSprite`, `PokemonName`, `VisitCount`, `RefreshButton`, `LoadingText`, `EmptyText`, `ErrorText`).
+
+---
+
+## Removed Features
+
+### Pokémon Cards & Cart (removed)
+
+The following were removed as practice/placeholder features not part of the core site experience:
+
+- **`/pokemoncards` route** — `PokemonCatalogue` page (`src/pages/PokemonCatalogue/`)
+- **`/cart` route** — `Cart` page (`src/pages/Cart/`)
+- **`CartContext`** — `src/context/CartContext.jsx` and `CartProvider` wrapper in `App.jsx`
+- **Cart icon** — `CartIcon.jsx` component, cart link in `Nav.jsx`, and all cart styled components (`CartContainer`, `CartIcon`, `AmountContainer`, `CartAmount`) from `Nav.styled.jsx`
+- **`src/components/PokemonCard/`** — entire folder (`Pokemon.jsx`, `PokemonCard.jsx`, `PokemonWeak.jsx`, `PokemonIcon.jsx`, `Pokemon.styled.jsx`) — these were only consumed by the deleted pages
+
+Do not re-add these. If new e-commerce or collection features are needed in the future, build them fresh rather than restoring these files.
