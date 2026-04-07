@@ -1272,3 +1272,85 @@ The local `.env` file is never pushed to GitHub, so the live site has no key unl
 **Other pages** (`BrowsePokemon.jsx`, `MoreInfoLanding.jsx`) already used `[]` and were not affected.
 
 **Rule:** Never put `fetchAllListPages` or `fetchNextListPage` in a `useEffect` dependency array. Always use `[]`.
+
+---
+
+## Supabase Tables
+
+### `pokemon_visits`
+
+Tracks every detail page view. Inserted in `MoreInfoLanding.jsx` on mount when `pokemonDetails.id` and `pokemonDetails.name` are available.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `pokemon_id` | int | Pokémon species ID (1–1025) |
+| `pokemon_name` | text | Lowercase API name |
+| `visited_at` | timestamptz | Default `now()` |
+
+RLS policies: public insert and select allowed. Insert fails silently — never blocks UI.
+
+Used by `/trending/visits` to query last 7 days via `.gte('visited_at', ...)`.
+
+### `battle_history`
+
+Tracks every completed battle. Inserted in `BattlePage.jsx` inside `handleAnimationComplete` after the animation sequence finishes and `winner` state is set.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `pokemon1_id` | int | Fighter 1 ID |
+| `pokemon1_name` | text | Fighter 1 lowercase name |
+| `pokemon2_id` | int | Fighter 2 ID |
+| `pokemon2_name` | text | Fighter 2 lowercase name |
+| `winner_id` | int | Winner ID; `null` for ties |
+| `winner_name` | text | Winner lowercase name; `null` for ties |
+| `battled_at` | timestamptz | Default `now()` |
+
+RLS policies: public insert and select allowed. Insert fires once per battle, fails silently via `console.warn` — never blocks UI or results panel.
+
+Used by `/trending/battles` to aggregate picks and matchups.
+
+---
+
+## Trending Pages
+
+### Nav Dropdown
+
+"Trending" is a nav dropdown (matching the Pokémon dropdown pattern — same `NavDropdownWrapper`, `NavDropdownTrigger`, `NavDropdown`, `NavDropdownItem` components and hover-bridge fix). State: `trendingOpen`. `handleDropdownNav` closes both `pokemonOpen` and `trendingOpen`.
+
+| Label | Route |
+|-------|-------|
+| Visits | `/trending/visits` |
+| Battles | `/trending/battles` |
+
+### `/trending/visits` (`TrendingVisits.jsx`)
+
+Refactored from the original `TrendingPage.jsx` (renamed, same logic). Queries `pokemon_visits` for the last 7 days, aggregates client-side by `pokemon_id`, displays top 10 most visited Pokémon.
+
+- Rank list with 48px official-artwork sprites, gold Russo One names, visit counts
+- Gold/silver/bronze rank colors for top 3; #1 row gets subtle gold background glow
+- Refresh button; loading/empty/error states
+
+Title: "Most Visited Pokémon". Subtitle: "Most visited Pokémon pages in the last 7 days".
+
+### `/trending/battles` (`TrendingBattles.jsx`)
+
+Queries `battle_history`. Two sections, both re-aggregated client-side.
+
+**Time window toggle** — "Last 7 Days" (default) / "All Time". Switching re-fetches. Active button: gold background, black text. Inactive: transparent, gold border.
+
+**Section 1 — Most Picked Pokémon (top 10):**
+- Aggregates all `pokemon1` and `pokemon2` appearances combined (each battle counts as 2 picks)
+- Per row: rank number, 48px sprite, gold name (link to `/collection/:id`), pick count, win count, win rate badge
+- Win rate badge: green if >50%, red if <50%, grey if =50%
+
+**Section 2 — Most Common Matchups (top 10):**
+- Pairs normalized by sorting lower `pokemon_id` first — "A vs B" and "B vs A" count as the same matchup
+- Per row: rank number, left Pokémon (40px sprite + name, link to `/collection/:id`), "VS", right Pokémon, battle count, winner line (`"[Name] leads X–Y"` in gold if decisive, `"Even X–X"` in grey)
+- Clicking the entire row calls `navigate('/battle', { state: { pokemonAId, pokemonBId } })`, which pre-fills the `/battle` selectors via `useLocation` state in `BattlePage.jsx`
+
+**Pre-fill in BattlePage.jsx:** On mount, reads `location.state?.pokemonAId` and `pokemonBId`. If both present, fetches via `fetchPokemonDetail` in parallel and sets `pokemonA`/`pokemonB`. Runs in `useEffect([], [])` — once only.
+
+**Shared styled components in `Trending.styled.jsx`:**
+`SectionTitle`, `SectionLine`, `TimeToggleRow`, `TimeToggleBtn`, `PickRightCol`, `PickCount`, `WinCount`, `WinRateBadge`, `MatchupRow`, `MatchupPoke`, `MatchupSprite`, `MatchupPokeName`, `MatchupVs`, `MatchupRight`, `MatchupCount`, `MatchupWinLine`
+
+Both pages import from `Trending.styled.jsx` alongside the existing shared exports (`TrendingPageTitle`, `TrendingTitleLine`, `TrendingSubtitle`, `TrendingList`, `TrendingRow`, `RankNumber`, `PokemonSprite`, `PokemonName`, `VisitCount`, `RefreshButton`, `LoadingText`, `EmptyText`, `ErrorText`).
