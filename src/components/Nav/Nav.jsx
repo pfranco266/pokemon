@@ -1,11 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link, NavContainer, NavBar, NavDropdownWrapper, NavDropdownTrigger, NavDropdown, NavDropdownItem } from "./Nav.styled";
-import CartContext from "../../context/CartContext";
-import Cart from "./CartIcon";
 
 function Nav() {
-    const { totalAmount } = useContext(CartContext);
     const [pokemonOpen, setPokemonOpen] = useState(false);
     const [trendingOpen, setTrendingOpen] = useState(false);
     const navigate = useNavigate();
@@ -70,12 +67,6 @@ function Nav() {
                         </NavDropdownItem>
                     </NavDropdown>
                 </NavDropdownWrapper>
-
-                <Link aria-label="Pokemon Cards" to="/pokemoncards">Pokemon Cards</Link>
-
-                <Link aria-label="Cart" to="/cart">
-                    <Cart amount={totalAmount} />
-                </Link>
             </NavBar>
         </NavContainer>
     );

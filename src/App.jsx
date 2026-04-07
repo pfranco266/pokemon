@@ -3,7 +3,6 @@ import './App.css'
 import { Container } from './App.styled'
 import { Routes, Route, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { CartProvider } from './context/CartContext';
 import { PokemonCacheProvider } from './context/PokemonCacheContext';
 import { AbilitiesCacheProvider } from './context/AbilitiesCacheContext';
 import { MovesCacheProvider } from './context/MovesCacheContext';
@@ -20,8 +19,6 @@ import TrendingBattles from './pages/Trending/TrendingBattles';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
-import Cart from './pages/Cart/Cart';
-import PokemonCatalogFC from './pages/PokemonCatalogue/PokemonCatalogue';
 
 import MoreInfoLanding from "./pages/PokemonDetail/MoreInfoLanding"
 import BrowseLanding from './pages/Collection/BrowseLanding';
@@ -49,7 +46,6 @@ function App() {
 
   return (
         <Container >
-            <CartProvider>
             <PokemonCacheProvider>
             <AbilitiesCacheProvider>
             <MovesCacheProvider>
@@ -60,8 +56,6 @@ function App() {
                   <Route path="/" element={<Home />}/>
                   <Route path="/collection" element={<BrowseLanding />}/>
                   <Route path="/collection/:id" element={<MoreInfoLanding/>}/>
-                  <Route path="/pokemoncards" element={<PokemonCatalogFC />}/>
-                  <Route path="/cart" element={<Cart />}/>
                   <Route path="/abilities" element={<AbilitiesLanding />}/>
                   <Route path="/abilities/:name" element={<AbilityDetail />}/>
                   <Route path="/moves" element={<MovesLanding />}/>
@@ -77,7 +71,6 @@ function App() {
             </MovesCacheProvider>
             </AbilitiesCacheProvider>
             </PokemonCacheProvider>
-            </CartProvider>
               <Footer onShowCookieSettings={() => setBannerVisible(true)} />
               {bannerVisible && (
                 <CookieBanner onHide={() => setBannerVisible(false)} />

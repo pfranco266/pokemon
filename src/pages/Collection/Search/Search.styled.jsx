@@ -98,7 +98,6 @@ export const ResultNumber = styled.span`
     white-space: nowrap;
 `;
 
-// Kept for external consumers that extend this component (e.g. AddtoCartButton in Pokemon.styled.jsx)
 export const SearchButton = styled.button`
     padding: 10px;
     border: 4px solid ${colors.formBorder};
