@@ -48,6 +48,8 @@ function Nav() {
 
                 <Link aria-label="Battle" to="/battle">Battle</Link>
 
+                <Link aria-label="Trending" to="/trending">Trending</Link>
+
                 <Link aria-label="Pokemon Cards" to="/pokemoncards">Pokemon Cards</Link>
 
                 <Link aria-label="Cart" to="/cart">

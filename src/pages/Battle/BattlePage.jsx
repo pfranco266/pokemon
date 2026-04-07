@@ -4,6 +4,7 @@ import { usePokemonCache } from '../../context/PokemonCacheContext';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import colorMap from '../../utils/colorMap';
 import { calculateBPS, determineWinner, getLoreTierInfo } from '../../utils/battleEngine';
+import { trackEvent } from '../../utils/analytics';
 import {
     BattlePageWrapper,
     BattlePageTitle,
@@ -589,7 +590,10 @@ function ResultsPanel({ pokemonA, pokemonB, winner, bpsResult, onReset }) {
             )}
 
             <TabRow>
-                <Tab $active={activeTab === 'narrative' ? 1 : 0} onClick={() => setActiveTab('narrative')}>
+                <Tab $active={activeTab === 'narrative' ? 1 : 0} onClick={() => {
+                    setActiveTab('narrative');
+                    trackEvent('Battle', 'ai_narrative_viewed', `${pokemonA.name}_vs_${pokemonB.name}`);
+                }}>
                     Battle Narrative
                 </Tab>
                 <Tab $active={activeTab === 'breakdown' ? 1 : 0} onClick={() => setActiveTab('breakdown')}>
@@ -707,6 +711,7 @@ function BattlePage() {
 
     async function handleSuggestionSelect(sugA, sugB) {
         if (loadingSuggestion) return;
+        trackEvent('Battle', 'suggested_battle_clicked', `${sugA.name}_vs_${sugB.name}`);
         setLoadingSuggestion(true);
         try {
             const [rawA, rawB] = await Promise.all([
@@ -726,6 +731,7 @@ function BattlePage() {
 
     function handleBattle() {
         if (!pokemonA || !pokemonB) return;
+        trackEvent('Battle', 'battle_started', `${pokemonA.name}_vs_${pokemonB.name}`);
         const result = calculateBPS(pokemonA, pokemonB);
         const w = determineWinner(result.aBPS, result.bBPS);
         setBpsResult(result);

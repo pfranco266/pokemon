@@ -16,6 +16,8 @@ import {
     CompactBannerName,
 } from "./MoreInfo.styled";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { supabase } from '../../utils/supabaseClient';
+import { trackEvent } from '../../utils/analytics';
 
 function MoreInfoLanding() {
     const params = useParams();
@@ -49,6 +51,28 @@ function MoreInfoLanding() {
         );
         obs.observe(el);
         return () => obs.disconnect();
+    }, [pokemonDetails.id]);
+
+    useEffect(() => {
+        if (!pokemonDetails.id || !pokemonDetails.name) return;
+        console.log('Tracking visit for:', pokemonDetails.id, pokemonDetails.name);
+        trackEvent('Pokemon', 'pokemon_viewed', pokemonDetails.name);
+
+        const trackVisit = async () => {
+            try {
+                await supabase
+                    .from('pokemon_visits')
+                    .insert({
+                        pokemon_id: pokemonDetails.id,
+                        pokemon_name: pokemonDetails.name
+                    });
+            } catch (err) {
+                // Fail silently — never block the UI for analytics
+                console.warn('Visit tracking failed:', err);
+            }
+        };
+
+        trackVisit();
     }, [pokemonDetails.id]);
 
     useEffect(() => {
