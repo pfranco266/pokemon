@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePokemonCache } from '../../../context/PokemonCacheContext';
+import { trackEvent } from '../../../utils/analytics';
 import { capitalizeFirstLetter } from '../../../utils/stringUtils';
 import {
     SearchWrapper,
@@ -53,6 +54,7 @@ function Search() {
 
     function navigateTo(pokemon) {
         const id = getIdFromUrl(pokemon.url);
+        trackEvent('Search', 'pokemon_searched', query || pokemon.name);
         navigate(`/collection/${id}`);
         setResults([]);
         setQuery('');

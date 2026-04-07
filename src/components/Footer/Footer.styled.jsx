@@ -43,6 +43,23 @@ width: 100%;
 height: 100%;
 `;
 
+export const CookieSettingsLink = styled.button`
+    background: none;
+    border: none;
+    color: rgba(255, 204, 0, 0.55);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0 1em;
+    white-space: nowrap;
+    align-self: center;
+    transition: color 0.15s;
+    font-family: inherit;
+
+    &:hover {
+        color: #ffcc00;
+    }
+`;
+
 export const SocialsIcons = styled.img`
     width: 3em;
     height: 3em;

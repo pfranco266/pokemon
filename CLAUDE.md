@@ -55,6 +55,22 @@ Battle feature is planned for implementation:
 - **React Router v6** — `<BrowserRouter>` with nested routes in `App.jsx`
 - **Styled-components 6** — CSS-in-JS, prop-driven dynamic styles
 - **PokeAPI** — public REST API, no auth required
+- **Supabase** — Postgres backend for visit tracking (`pokemon_visits` table)
+
+## Environment Variables
+
+The following must be set in `.env` locally and in **Netlify environment variables** for the live site:
+
+```
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+VITE_GA_MEASUREMENT_ID
+```
+
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — power the Supabase client (`src/utils/supabaseClient.js`) used for visit tracking and the `/trending` page.
+- `VITE_GA_MEASUREMENT_ID` — Google Analytics 4 measurement ID (format: `G-XXXXXXXXXX`). Used in `src/utils/analytics.js`. GA is only initialized after user grants analytics consent via the cookie banner.
+
+Never commit actual values to the repo.
 
 ---
 

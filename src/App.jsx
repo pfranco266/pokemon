@@ -1,8 +1,8 @@
 
 import './App.css'
 import { Container } from './App.styled'
-import { Routes, Route} from 'react-router-dom';
-import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { CartProvider } from './context/CartContext';
 import { PokemonCacheProvider } from './context/PokemonCacheContext';
 import { AbilitiesCacheProvider } from './context/AbilitiesCacheContext';
@@ -15,6 +15,7 @@ import MoveDetail from './pages/Moves/MoveDetail';
 import TypesLanding from './pages/Types/TypesLanding';
 import TypeDetail from './pages/Types/TypeDetail';
 import BattlePage from './pages/Battle/BattlePage';
+import TrendingPage from './pages/Trending/TrendingPage';
 
 import Home from "./pages/Home/Home"
 import Nav from "./components/Nav/Nav"
@@ -23,8 +24,28 @@ import PokemonCatalogFC from './pages/PokemonCatalogue/PokemonCatalogue';
 
 import MoreInfoLanding from "./pages/PokemonDetail/MoreInfoLanding"
 import BrowseLanding from './pages/Collection/BrowseLanding';
-import Footer from "./components/Footer"
+import Footer from "./components/Footer/Footer"
+import CookieBanner from './components/CookieBanner/CookieBanner';
+import { initGA, trackPageView } from './utils/analytics';
+
 function App() {
+  const location = useLocation();
+  const [bannerVisible, setBannerVisible] = useState(
+    () => localStorage.getItem('analytics-consent') === null
+  );
+
+  // Initialize GA on mount if consent was already given on a previous visit
+  useEffect(() => {
+    if (localStorage.getItem('analytics-consent') === 'true') {
+      initGA();
+    }
+  }, []);
+
+  // Track page views on route change (consent check is inside trackPageView)
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+
   return (
         <Container >
             <CartProvider>
@@ -47,6 +68,7 @@ function App() {
                   <Route path="/types" element={<TypesLanding />}/>
                   <Route path="/types/:name" element={<TypeDetail />}/>
                   <Route path="/battle" element={<BattlePage />}/>
+                  <Route path="/trending" element={<TrendingPage />}/>
               </Routes>
 
             </TypesCacheProvider>
@@ -54,7 +76,10 @@ function App() {
             </AbilitiesCacheProvider>
             </PokemonCacheProvider>
             </CartProvider>
-              <Footer/>
+              <Footer onShowCookieSettings={() => setBannerVisible(true)} />
+              {bannerVisible && (
+                <CookieBanner onHide={() => setBannerVisible(false)} />
+              )}
         </Container>
   )
 }
