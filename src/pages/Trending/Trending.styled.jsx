@@ -130,6 +130,189 @@ export const VisitCount = styled.span`
     flex-shrink: 0;
 `;
 
+// ── Section headings (battles page) ──────────────────────────────────────────
+
+export const SectionTitle = styled.h2`
+    font-family: 'Russo One', sans-serif;
+    font-size: 1.3rem;
+    color: #ffcc00;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 2rem 0 0.5rem;
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+`;
+
+export const SectionLine = styled.div`
+    width: 50px;
+    height: 2px;
+    background: rgba(255, 204, 0, 0.5);
+    margin: 0 auto 1.25rem;
+`;
+
+// ── Time window toggle ────────────────────────────────────────────────────────
+
+export const TimeToggleRow = styled.div`
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.75rem;
+`;
+
+export const TimeToggleBtn = styled.button`
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.8rem;
+    padding: 0.45em 1.25em;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+    background: ${({ $active }) => $active ? '#ffcc00' : 'transparent'};
+    color: ${({ $active }) => $active ? '#000' : '#ffcc00'};
+    border: 2px solid ${({ $active }) => $active ? '#ffcc00' : 'rgba(255,204,0,0.4)'};
+
+    &:hover {
+        border-color: #ffcc00;
+        background: ${({ $active }) => $active ? '#ffe033' : 'rgba(255,204,0,0.08)'};
+    }
+`;
+
+// ── Most Picked — extra cells ─────────────────────────────────────────────────
+
+export const PickRightCol = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    flex-shrink: 0;
+`;
+
+export const PickCount = styled.span`
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+`;
+
+export const WinCount = styled.span`
+    font-size: 0.78rem;
+    color: rgba(255, 204, 0, 0.6);
+    white-space: nowrap;
+`;
+
+export const WinRateBadge = styled.span`
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.7rem;
+    padding: 0.1em 0.45em;
+    border-radius: 4px;
+    background: ${({ $rate }) => {
+        if ($rate > 50) return 'rgba(76,175,80,0.15)';
+        if ($rate < 50) return 'rgba(229,57,53,0.15)';
+        return 'rgba(158,158,158,0.15)';
+    }};
+    border: 1px solid ${({ $rate }) => {
+        if ($rate > 50) return '#4caf50';
+        if ($rate < 50) return '#e53935';
+        return '#9e9e9e';
+    }};
+    color: ${({ $rate }) => {
+        if ($rate > 50) return '#4caf50';
+        if ($rate < 50) return '#e53935';
+        return '#9e9e9e';
+    }};
+`;
+
+// ── Matchup rows ──────────────────────────────────────────────────────────────
+
+export const MatchupRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 204, 0, 0.15);
+    border-left: 3px solid transparent;
+    background: ${({ $rank, $iseven }) => {
+        if ($rank === 1) return 'rgba(255,204,0,0.08)';
+        return $iseven ? 'rgba(255,255,255,0.03)' : 'transparent';
+    }};
+    text-decoration: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        border-left-color: #ffcc00;
+        background: rgba(255, 255, 255, 0.05);
+    }
+`;
+
+export const MatchupPoke = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 0;
+`;
+
+export const MatchupPokeLink = styled.a`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    text-decoration: none;
+    cursor: pointer;
+`;
+
+export const MatchupSprite = styled.img`
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+`;
+
+export const MatchupPokeName = styled.span`
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.78rem;
+    color: #ffcc00;
+    text-transform: capitalize;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+`;
+
+export const MatchupVs = styled.span`
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.85rem;
+    color: #ffcc00;
+    flex-shrink: 0;
+`;
+
+export const MatchupRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    flex-shrink: 0;
+`;
+
+export const MatchupCount = styled.span`
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+`;
+
+export const MatchupWinLine = styled.span`
+    font-size: 0.75rem;
+    color: ${({ $decisive }) => $decisive ? '#ffcc00' : 'rgba(255,255,255,0.35)'};
+    white-space: nowrap;
+`;
+
 // ── Refresh button ────────────────────────────────────────────────────────────
 
 export const RefreshButton = styled.button`
